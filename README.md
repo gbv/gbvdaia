@@ -16,9 +16,14 @@ Anschließend muss ein Apache-Webserver so eingerichtet werden, dass unter der
 gewünschten Basis-URL des DAIA-Servers das Verzeichnis `src/` ausgeliefert
 wird.
 
+## Demo
+
+Eine (langsame) Demo-Instanz ist möglicherweise unter
+<https://gbvdaia.herokuapp.com/> verfügbar.
+
 ## Entwicklung
 
-[![License](https://poser.pugx.org/gbv/jskos/license)](https://packagist.org/packages/gbv/jskos)
+[![License](https://poser.pugx.org/gbv/gbvdaia/license)](https://packagist.org/packages/gbv/gbvdaia)
 [![Build Status](https://travis-ci.org/gbv/gbvdaia.svg?branch=master)](https://travis-ci.org/gbv/gbvdaia)
 [![Coverage Status](https://coveralls.io/repos/gbv/gbvdaia/badge.svg?branch=master)](https://coveralls.io/r/gbv/gbvdaia)
 

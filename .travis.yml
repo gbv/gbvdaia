@@ -16,3 +16,12 @@ script:
 
 after_script:
     - php vendor/bin/coveralls
+
+deploy:
+    provider: heroku
+    api_key:
+        secure: IRG0mCjwdqDJHls5ReZi1B10/xB/Rz4EfJGtGXwS+wh1LdVeZLVnfBzsCwhly03cI+SGAKOzSqAJxC1CK2Q8+RGVXAq4C8wNjPfwY05goIl+bQhyVu4md/Da/tchlXZOvotDD4FdcqOvXkh67KVWC2QUzmsyomwadGLu3oN0VbSxM/dMSv4lrYxIPGBBgYdVQjJpcJYIxVQoiDkuN6S/P9W/NhRN6ZAVe6ef3rirFOMApfDFuKacPtqYFXE4QYWeWLmMKhgUFTU1wrPfjwB8RI21jpQkQUbreoDkDUsBi2pRah3Z3Ne/zCsGsfcJlcIjC0OxbJFVxmYJrmC5eat+2LHOW2OAx/b8gCAHngXqxeyoeOgmRUHA7eTDwoaWqTwFcrvV8AKvFK1/npo2Mgd1imQkjzWkLYr7j/ypjKQsZ4tHQdL2sd5WD6S5Kgs6R78gR+0vfWieamV4338DkGN00Yt1ZE1/6LSicFUd9bhPkhS0ea81I+UnDnfYRkD1cBC++GkwRASsHE6Zq01AKMq18W8hCSOjSAAKJWGVy1GaqtQX/XHL2CKKltWXjagzLmFk034xxQggnCqtlb1iL5PjerIGUZoIDp5Y035YLrghobIGPdTAO/tkKAGTLAhP+QjLoaIihWCjbcVVR6WBmPYB51++euuz5MihWh9dXKQzXLs=
+    on:
+        branch: master
+        php: 7.0
+    skip_cleanup: true

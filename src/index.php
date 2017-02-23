@@ -5,7 +5,21 @@ include __DIR__.'/../vendor/autoload.php';
 use DAIA\Request;
 use DAIA\Error;
 
-$request = new Request($_GET, getallheaders());
+// build request
+
+if (function_exists('getallheaders')) {
+    $headers = getallheaders();
+} else {
+	$headers = [];
+	foreach ($_SERVER as $name => $value) { 
+		if (substr($name, 0, 5) != 'HTTP_') continue;
+		$name = str_replace(' ', '-', ucwords(strtolower(str_replace('_', ' ', substr($name, 5)))));
+		$headers[$name] = $value;
+   } 
+}
+
+$request = new Request($_GET, $headers);
+
 
 # TODO: HTTP OPTIONS request and 405 response
 
