@@ -1,5 +1,8 @@
 <?php
 
+namespace GBV;
+
+
 class ISIL
 {
     static function ok($isil)

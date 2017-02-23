@@ -1,5 +1,8 @@
 <?php
 
+namespace GBV;
+
+
 class DocumentID 
 {
     public $requested;

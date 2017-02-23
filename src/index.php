@@ -5,6 +5,8 @@ include __DIR__.'/../vendor/autoload.php';
 use DAIA\Request;
 use DAIA\Error;
 
+use GBV\DAIAService;
+
 // build request
 
 if (function_exists('getallheaders')) {
@@ -20,16 +22,19 @@ if (function_exists('getallheaders')) {
 
 $request = new Request($_GET, $headers);
 
+# TODO: Automatically answer non-GET requests (HTTP OPTIONS / 405 error response)
 
-# TODO: HTTP OPTIONS request and 405 response
 
-$app = new GBVDAIA();
+// get response from DAIA Service
+
+$config = [];
+$app = new DAIAService($config);
 
 $path = $_SERVER['PATH_INFO'] ?? '';
 if ($path == '') {
     $response = $app->query($request);
 } else {
-    $isil = GBVDAIA::isilFromPath($path);
+    $isil = DAIAService::isilFromPath($path);
     if ($isil) {
         $response = $app->query($request, $isil);
     } else {

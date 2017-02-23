@@ -21,6 +21,17 @@ wird.
 Eine (langsame) Demo-Instanz ist möglicherweise unter
 <https://gbvdaia.herokuapp.com/> verfügbar.
 
+## Einbindung in eigene Programme
+
+~~~php
+use DAIA\Request;
+use GBV\DAIAService;
+
+$service  = new DAIAService();
+$request  = new Request(['id'=>$id]);
+$response = $service->query($request);   # DAIA\Response oder DAIA\Error
+~~~
+
 ## Entwicklung
 
 [![License](https://poser.pugx.org/gbv/gbvdaia/license)](https://packagist.org/packages/gbv/gbvdaia)

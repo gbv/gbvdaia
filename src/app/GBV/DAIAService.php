@@ -1,11 +1,14 @@
 <?php
 declare(strict_types=1);
 
+namespace GBV;
+
 use DAIA\Response;
 use DAIA\Document;
 use DAIA\Item;
 
-class GBVDAIA
+
+class DAIAService
 {
     static function isilFromPath(string $path)
     {

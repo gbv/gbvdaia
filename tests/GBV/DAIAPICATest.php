@@ -1,5 +1,7 @@
 <?php
 
+namespace GBV;
+
 use PHPUnit\Framework\TestCase;
 
 

@@ -1,7 +1,10 @@
 <?php
 declare(strict_types=1);
 
+namespace GBV;
+
 use PICA\Field;
+
 
 /**
  * PICA+ record stripped down to information required for DATA.
