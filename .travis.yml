@@ -1,0 +1,18 @@
+language: php
+php:
+    - 7.1
+    - 7.0
+
+matrix:
+    fast_finish: true
+
+install:
+    - composer install
+    - composer require satooshi/php-coveralls
+    - cat composer.json
+
+script:
+    - composer travis-test
+
+after_script:
+    - php vendor/bin/coveralls

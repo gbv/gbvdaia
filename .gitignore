@@ -1,0 +1,4 @@
+# PHP files
+vendor/
+phpunit.xml
+clover.xml
