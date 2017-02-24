@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace GBV;
+namespace GBV\DAIA;
 
 use PICA\Field;
 
@@ -9,7 +9,7 @@ use PICA\Field;
 /**
  * PICA+ record stripped down to information required for DATA.
  */
-class DAIAPICA
+class Record
 {
     public $mak;
     public $holdings = [];
@@ -36,7 +36,7 @@ class DAIAPICA
             } else { # '201@' or '209A'
                 $occ = (int)$field->occ - 1;
                 if (!isset($holdings[$occ])) {
-                    $holdings[$occ] = new DAIAPICAHolding();
+                    $holdings[$occ] = new Holding();
                 };
                 $holding = &$holdings[$occ];
 
@@ -56,14 +56,13 @@ class DAIAPICA
     }
 }
 
-class DAIAPICAHolding
+class Holding
 {
-                        public $epn;
-                        public $label;                        
-                        public $sst;
-                        public $indikator;
-                        public $href;
-                        public $status;
-                        public $queue;
-
+    public $epn;
+    public $label;                        
+    public $sst;
+    public $indikator;
+    public $href;
+    public $status;
+    public $queue;
 }

@@ -1,11 +1,11 @@
 <?php
 
-namespace GBV;
+namespace GBV\DAIA;
 
 use PHPUnit\Framework\TestCase;
 
 
-class DAIAPICATest extends TestCase {
+class RecordTest extends TestCase {
 
     public function testConstructor() {
         $pica = <<<'PICA'
@@ -26,12 +26,12 @@ class DAIAPICATest extends TestCase {
 209C/01 $a93:09096$x00
 PICA;
 
-        $rec = new DAIAPICA($pica);
+        $rec = new Record($pica);
         $this->assertSame($rec->mak, 'Aau');
         $this->assertSame(count($rec->holdings), 1);
         $this->assertSame(count($rec->holdings['90']), 1);
 
-        $holding = new DAIAPICAHolding();
+        $holding = new Holding();
     	$holding->epn = '134005945';
     	$holding->label = 'ERZ 608:A24 : I-02';
     	$holding->indikator = 'f';

@@ -1,15 +1,25 @@
 <?php
 declare(strict_types=1);
 
-namespace GBV;
+namespace GBV\DAIA;
 
 use DAIA\Response;
 use DAIA\Document;
 use DAIA\Item;
 
+use GBV\DocumentID;
+use GBV\ISIL;
+use GBV\DAIAPICA;
 
-class DAIAService
+
+class Service
 {
+    protected $config;
+
+    public function __construct(Config $config) {
+        $this->config = $config;
+    }
+
     static function isilFromPath(string $path)
     {
         if (preg_match('!^/isil/(.+)!', $path, $match) and ISIL::ok($match[1])) {
@@ -78,6 +88,3 @@ class DAIAService
 		return $item;
    	}
 }
-
-
-
