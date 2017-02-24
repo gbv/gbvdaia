@@ -5,8 +5,6 @@ include __DIR__.'/../vendor/autoload.php';
 use DAIA\Request;
 use DAIA\Error;
 
-use GBV\DAIAService;
-
 // build request
 
 if (function_exists('getallheaders')) {
@@ -26,9 +24,8 @@ $request = new Request($_GET, $headers);
 
 
 // get response from DAIA Service
-
-$config = [];
-$app = new DAIAService($config);
+$config = new GBV\DAIA\FileConfig('daia-config');
+$app = new GBV\DAIA\Service($config);
 
 $path = $_SERVER['PATH_INFO'] ?? '';
 if ($path == '') {

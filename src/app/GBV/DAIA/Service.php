@@ -1,15 +1,25 @@
 <?php
 declare(strict_types=1);
 
-namespace GBV;
+namespace GBV\DAIA;
 
 use DAIA\Response;
 use DAIA\Document;
 use DAIA\Item;
 
+use GBV\DocumentID;
+use GBV\ISIL;
+use GBV\DAIA\Record;
 
-class DAIAService
+
+class Service
 {
+    protected $config;
+
+    public function __construct(Config $config) {
+        $this->config = $config;
+    }
+
     static function isilFromPath(string $path)
     {
         if (preg_match('!^/isil/(.+)!', $path, $match) and ISIL::ok($match[1])) {
@@ -52,7 +62,7 @@ class DAIAService
         # TODO: add href based on opac URL
         # TODO: add department
         
-        $pica = new DAIAPICA($pica); # TODO: catch parsing error?
+        $pica = new Record($pica); # TODO: catch parsing error?
 		# TODO: make sure that all holdings have epn not null
 
         foreach ($pica->holdings as $iln => $level2) {
@@ -78,6 +88,3 @@ class DAIAService
 		return $item;
    	}
 }
-
-
-
