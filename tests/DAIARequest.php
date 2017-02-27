@@ -11,11 +11,15 @@ class DAIARequestTest extends TestCase
     {
         $r = new Request();
         $this->assertSame($r->ids,[]);
+        $this->assertSame($r->method, 'GET');
         
         $r = new Request(['id'=>'']);
         $this->assertSame($r->ids,[]);
 
         $r = new Request(['id'=>'foo|bar']);
         $this->assertSame($r->ids,['foo','bar']);
+
+        $r = new Request([],[],'OPTIONS');
+        $this->assertSame($r->method, 'OPTIONS');
     }
 }

@@ -16,27 +16,21 @@ use DAIA\Error;
 
 // build request
 
+$request = Request::fromHTTP();
+
+$options = [ 'language' => 'de' ]; # TODO: profile.json
+
+// Respond to HTTP OPTIONS and non-GET/HEAD requests
+DAIA\Response::handleHTTPMethods($request, $options);
+
+
 $path = $_SERVER['PATH_INFO'] ?? '';
-
-if (function_exists('getallheaders')) {
-    $headers = getallheaders();
-} else {
-	$headers = [];
-	foreach ($_SERVER as $name => $value) { 
-		if (substr($name, 0, 5) != 'HTTP_') continue;
-		$name = str_replace(' ', '-', ucwords(strtolower(str_replace('_', ' ', substr($name, 5)))));
-		$headers[$name] = $value;
-   } 
-}
-
-$request = new Request($_GET, $headers);
-
-# TODO: Automatically answer non-GET requests (HTTP OPTIONS / 405 error response)
 
 if (!count($request->ids) && $path === '') {
     include 'startseite.php';
     exit;
 }
+
 
 // get response from DAIA Service
 $config = new GBV\DAIA\FileConfig('daia-config');
@@ -53,9 +47,10 @@ if ($path == '') {
     }
 }
 
+# TODO: support HEAD request
+
 $response->send([
     'callback' => $request->callback,
     'language' => 'de', # TODO: configure?
     # TODO: add Link header for multiple ids
 ]);
-
