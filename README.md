@@ -25,7 +25,7 @@ werden folgendermaßen installiert:
     $ composer install --no-dev
 
 Anschließend muss ein Apache-Webserver so eingerichtet werden, dass unter der
-gewünschten Basis-URL des DAIA-Servers das Verzeichnis `src/` ausgeliefert
+gewünschten Basis-URL des DAIA-Servers das Verzeichnis `public/` ausgeliefert
 wird. Zusätzlich wird das Apache-Modul mod_rewrite benötigt.
 
 ## Demo
