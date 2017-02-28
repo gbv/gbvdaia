@@ -1,12 +1,13 @@
 <?php
 
+namespace PICA;
+
 use PHPUnit\Framework\TestCase;
-use PICA\Field;
 
-
-class PICATest extends TestCase {
-
-    public function testField() {
+class FieldTest extends TestCase
+{
+    public function testField()
+    {
         $fields = [
             '123@ $abc$def$a' => [
                 'tag' => '123@',
@@ -44,7 +45,8 @@ class PICATest extends TestCase {
     /**
      * @expectedException InvalidArgumentException
      */
-    public function testFieldConstructor() {
+    public function testFieldConstructor()
+    {
         $f = new Field("333");
     }
 }

@@ -10,7 +10,13 @@ class Error extends ResponseData
     public $error_description;
     public $error_uri;
 
-    function __construct(int $c, string $e, string $d=NULL, $uri=NULL) {
+    public function getStatusCode(): int
+    {
+        return $this->code;
+    }
+
+    public function __construct(int $c, string $e, string $d=null, $uri=null)
+    {
         $this->code = $c;
         $this->error = $e;
         $this->error_description = $d;

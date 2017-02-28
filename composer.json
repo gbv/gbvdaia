@@ -4,11 +4,15 @@
     "type": "project",
     "autoload": {
         "psr-4": {
-            "": ["src/lib/", "src/app/"]
+            "": "src/"
         }
     },
     "require": {
         "php": ">=7.0.0",
+        "psr/log": "1.0.2",
+        "guzzlehttp/guzzle": "~6.0",
+        "easyrdf/easyrdf": "~0.9.0",
+        "monolog/monolog": ">=1.11.0",
         "symfony/yaml": "^3.2"
     },
     "license": "AGPL-3.0+",

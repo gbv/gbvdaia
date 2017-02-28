@@ -11,7 +11,8 @@ class Document extends Data
     public $about;
     public $item;
 
-    function __construct(string $id, string $requested = null) {
+    public function __construct(string $id, string $requested = null)
+    {
         $this->id = $id;
         $this->requested = $requested;
     }

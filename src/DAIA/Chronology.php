@@ -7,7 +7,7 @@ class Chronology extends Data
 {
     public $about;
 
-    function __construct(string $about = null)
+    public function __construct(string $about = null)
     {
         $this->about = $about;
     }

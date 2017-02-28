@@ -2,55 +2,48 @@
 
 include __DIR__.'/../vendor/autoload.php';
 
-/*
-// initialize logger
-use Monolog\Logger;
+$headers = [];
+# $headers['Link'] = "<$profile>; rel=\"profile\""; // TODO
 
-// log warnings and errors to STDERR by default
-$logStream = new \Monolog\Handler\StreamHandler('php://stderr', Logger::WARNING)
-$logger->pushHandler($stream);
- */
+try {
+    $request = DAIA\Request::fromGlobals();
 
-use DAIA\Request;
-use DAIA\Error;
+    // TODO: move into DAIA namespace?
+    if ($request->method == 'OPTIONS') {
+        $headers['Access-Control-Allow-Headers'] = ['Authorization, Content-Type'];
+        $headers['Access-Control-Allow-Methods'] = ['GET, HEAD, OPTIONS'];
+        $response = new DAIA\Response(); 
+    } 
+    else 
+    {
+        // TODO: move into DAIA\Request
+        $path = $_SERVER['PATH_INFO'] ?? '';
 
-// build request
+        if (!count($request->ids) && $path === '') {
+            include 'startseite.php';
+            exit;
+        }
 
-$request = Request::fromHTTP();
+        // get response from DAIA Service
+        $config = new GBV\DAIA\FileConfig('daia-config', Psr\Log\LogLevel::DEBUG);
 
-$options = [ 'language' => 'de' ]; # TODO: profile.json
+        $app = new GBV\DAIA\Service($config);
 
-// Respond to HTTP OPTIONS and non-GET/HEAD requests
-DAIA\Response::handleHTTPMethods($request, $options);
-
-
-$path = $_SERVER['PATH_INFO'] ?? '';
-
-if (!count($request->ids) && $path === '') {
-    include 'startseite.php';
-    exit;
-}
-
-
-// get response from DAIA Service
-$config = new GBV\DAIA\FileConfig('daia-config');
-$app = new GBV\DAIA\Service($config);
-
-if ($path == '') {
-    $response = $app->query($request);
-} else {
-    $isil = GBV\DAIA\Service::isilFromPath($path);
-    if ($isil) {
-        $response = $app->query($request, $isil);
-    } else {
-        $response = new Error(404, 'not_found', 'Nothing found at this URL');
+        if ($path == '') {
+            $response = $app->query($request);
+        } else {
+            $isil = GBV\DAIA\Service::isilFromPath($path);
+            if ($isil) {
+                $response = $app->query($request, $isil);
+            } else {
+                throw new DAIA\Error(404, 'not_found', 'Nothing found at this URL');
+            }
+        }
     }
+} catch (DAIA\Error $e) {
+    $response = $e;
 }
 
-# TODO: support HEAD request
+# TODO: add Link header for multiple ids
 
-$response->send([
-    'callback' => $request->callback,
-    'language' => 'de', # TODO: configure?
-    # TODO: add Link header for multiple ids
-]);
+$response->send($request->method, $headers ?? [], $request->callback ?? '');
