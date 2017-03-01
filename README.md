@@ -3,14 +3,13 @@
 Dieses git-Repository enthält den PHP-Quellcode des zentralen DAIA-Servers für
 den GBV (<https://daia.gbv.de/>). Der zentrale DAIA-Server bietet gegenüber dem
 [PAIA/DAIA-Service] nur *eingeschränkte Funktionalität*, da nicht direkt auf
-das Ausleihsystem zuggegriffen wird.
+das Ausleihsystem zugegriffen wird.
 
-## Funktionsumfang
+Unterstützt werden lediglich rudimentäre Funktionen für ausgewählte
+PICA-Kataloge (LBS-Bibliotheken).  Der genaue Funktionsumfang mit Unterschieden
+zum PAIA/DAIA-Service und zum alten DAIA-Server ist auf der Startseite
+beschrieben.
 
-* Rudimentärer DAIA-Server für ausgewählte PICA-Kataloge (LBS-Bibliotheken)
-* Entspricht der DAIA 1.0.0, d.h. keine `message` Felder (DAIA 0.5)
-* Elektronischen Publikationen werden nicht unterstützt
-* ...
 
 ## Installation
 
@@ -28,10 +27,12 @@ Anschließend muss ein Apache-Webserver so eingerichtet werden, dass unter der
 gewünschten Basis-URL des DAIA-Servers das Verzeichnis `public/` ausgeliefert
 wird. Zusätzlich wird das Apache-Modul mod_rewrite benötigt.
 
+
 ## Demo
 
 Eine (langsame) Demo-Instanz ist unter <https://gbvdaia.herokuapp.com/>
 verfügbar.
+
 
 ## Einbindung in eigene Programme
 
@@ -54,6 +55,7 @@ bereitgestellt werden (Interface `GBV\DAIA\Config`).
 
 [![Build Status](https://travis-ci.org/gbv/gbvdaia.svg?branch=master)](https://travis-ci.org/gbv/gbvdaia)
 [![Coverage Status](https://coveralls.io/repos/gbv/gbvdaia/badge.svg?branch=master)](https://coveralls.io/r/gbv/gbvdaia)
+
 
 ## Lizenz
 

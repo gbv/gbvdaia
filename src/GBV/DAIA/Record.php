@@ -39,18 +39,7 @@ class Record
                     $holdings[$occ] = new Holding();
                 };
                 $holding = &$holdings[$occ];
-
-                if ($field->tag == '201@') {
-                    $holding->epn    = $field->e;       # 201@ $e : EPN
-                    $holding->href   = $field->l;       # 201@ $l : Link auf das Ausleihsystem
-                    $holding->status = $field->b;       # 201@ $b : aktueller Ausleihstatus
-                    # (0:verfügbar, 1:bestellbar, 6: unbekannt (Bandliste), sonst: nicht verfügbar)
-                    $holding->queue  = $field->n;       # 201@ $n : Anzahl Vormerkungen
-                } elseif ($field->tag == '209A') {
-                    $holding->label     = $field->a;    # 209A $a : Signatur
-                    $holding->indikator = $field->d;    # 209A $d : Ausleihindikator
-                    $holding->sst       = $field->f;    # 209A $f : Sonderstandort
-                }
+                $holding->setFromField($field);
             }
         }
     }

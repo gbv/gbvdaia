@@ -25,7 +25,7 @@ try {
         }
 
         // get response from DAIA Service
-        $config = new GBV\DAIA\FileConfig('daia-config', Psr\Log\LogLevel::DEBUG);
+        $config = new GBV\DAIA\FileConfig('../config', Psr\Log\LogLevel::DEBUG);
 
         $app = new GBV\DAIA\Service($config);
 

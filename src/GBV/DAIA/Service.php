@@ -8,6 +8,9 @@ use DAIA\Error;
 use DAIA\Document;
 use DAIA\Item;
 use DAIA\Entity;
+use DAIA\ServiceStatus;
+use DAIA\Available;
+use DAIA\Unavailable;
 
 use GBV\DocumentID;
 use GBV\ISIL;
@@ -21,22 +24,22 @@ use Monolog\Logger;
 class Service
 {
     protected $config;
-    protected $logger;
+    protected $log;
     protected $client;
 
 
     public function __construct(Config $config)
     {
         $this->config = $config;
-        $this->logger = $config->logger();
+        $this->log = $config->logger();
 
         // configure HTTP logging
         $stack = \GuzzleHttp\HandlerStack::create();
-        $stack->unshift(\GuzzleHttp\Middleware::log($this->logger,
+        $stack->unshift(\GuzzleHttp\Middleware::log($this->log,
             new \GuzzleHttp\MessageFormatter("{method} {uri} {code}"),
             Logger::INFO    // internal HTTP request: INFO
         ));
-        $stack->unshift(\GuzzleHttp\Middleware::log($this->logger,
+        $stack->unshift(\GuzzleHttp\Middleware::log($this->log,
             new \GuzzleHttp\MessageFormatter("{res_headers}\n{res_body}"),
             Logger::DEBUG   // internal HTTP response: DEBUG
         ));
@@ -61,7 +64,7 @@ class Service
     public function query($request, $isil=null): Response
     {
         // DAIA Request object: INFO
-        # $this->logger->info('request', ['request'=>$request, 'isil' => $isil]);
+        # $this->log->info('request', ['request'=>$request, 'isil' => $isil]);
 
 
         $response = new Response();
@@ -74,7 +77,7 @@ class Service
         }
     
         if (!count($request->ids)) {
-            $this->logger->notice('missing request identifier');
+            $this->log->notice('missing request identifier');
             return $response;
         }
 
@@ -86,7 +89,7 @@ class Service
                 $doc = $this->queryDocument($id);
             # TODO: catch 404
             } catch (RequestException $e) {
-                $this->logger->error("502");
+                $this->log->error("502");
                 throw new Error(502, 'bad_gateway', 'internal request failed');
             }
         }
@@ -127,10 +130,13 @@ class Service
         $pica = new Record($pica);
 
 
-        # TODO: make sure that all holdings have epn not null
         foreach ($pica->holdings as $iln => $holdings) {
             foreach ($holdings as $holding) {
-                $doc->item[] = $this->convertHolding($id, $holding);
+                if ($holding->epn) {
+                    $doc->item[] = $this->convertHolding($id, $holding);
+                } else {
+					$this->log->warn('holding without epn', (array)$holding);
+				}
             }
         }
 
@@ -139,17 +145,96 @@ class Service
 
     public function convertHolding(DocumentID $id, Holding $holding)
     {
-        $item = new Item();
-        $item->id = "http://uri.gbv.de/document/{$id->dbkey}:epn:{$holding->epn}";
-        if ($holding->label) {
-            $item->label = $holding->label;
-        }
-        if ($holding->queue) {
-            $item->queue = $holding->queue;
+		$this->log->debug('convertHolding', (array)$holding);
+
+        $item = new Item([
+			'id' => "http://uri.gbv.de/document/{$id->dbkey}:epn:{$holding->epn}",
+			'label' => $holding->label,			
+		]);
+
+		$queue = (int)$holding->queue;
+        if ((string)$queue === $holding->queue) {
+            $item->queue = $queue;
         }
 
-        # TODO: status, sst, indikator, href
+        // TODO: href, part, chronology, department, storage
+
+        // Bandliste: Keine DAIA services auswerten
+        if ($holding->status == '6') {
+            return $item;
+        }
+
+        $indicator = $holding->indikator ?? '';
+
+		/**
+		 * TODO: in ausleihindikator.yaml auslagern
+		# Katalogspezifischer Standardwert falls nicht gesetzt
+		# TODO: Dies sollte in eine Konfigurationsdatei ausgelagert werden!
+		# Siehe https://info.gbv.de/display/DiB/DAIA (FIXME)
+		if ($d eq "" and $iln) {
+			if (grep { $_ eq $iln } qw(21 24 26 31 34 39 41 42 44 45 47 49 56 59 85 89 91 122 132 134 151 158 159 163 164 166 213)) {
+				$d = 'g';
+			} elsif (grep { $_ eq $iln } qw(43 82 97 209 229)) {
+				$d = 's';
+			}
+		}
+		*
+		*/
+
+
+        $services = $this->config->loanIndicator($id->dbkey, $indicator);
+        foreach ($services as $name => $config) {
+            if (!preg_match('/(^presentation|loan|interloan)$/', $name)) {
+                continue;
+            }
+            $service = $this->holdingService($holding, $name, $config);
+            if ($service instanceof Available) {
+                $item->available[] = $service;
+            } elseif ($service instanceof Unavailable) {
+                $item->unavailable[] = $service;
+            }
+        }
         
         return $item;
+    }
+
+    public function holdingService(Holding $holding, $service, $config): ServiceStatus
+    {
+        $this->log->debug('holdingService', ['service'=>$service, 'config' => $config]);
+
+        $is = $config['is'] ?? 'unavailable';
+        $has = [ 'service' => $service ];
+
+		// limitation
+        $limitation = $config['limitation'] ?? null;
+		if ($limitation) {
+			$has['limitation'] = [new Entity(['content'=>$limitation])];
+		}
+
+        // expected
+        $expected = $config['expected'] ?? $holding->date ?? null;
+        if ($expected && preg_match('/^(\d\d)-(\d\d)-(20\d\d)$/', $expected, $match)) {
+            $expected = $match[1].$match[2].$match[3];
+        }
+
+		// status
+        if ($holding->status == 1 and $holding->href) {
+            // verfügbar, muss bestellt werden
+            if ($is == 'available') {
+                $has['href'] = $holding->href;
+                $has['delay'] = 'unknown';
+            }
+        } elseif ($holding->status !== '0') {
+            // derzeit ausgeliehen oder muss bestellt werden
+            $is = 'unavailable';
+            $has['href'] = $holding->href;
+            if (!$expected) {
+                $expected = 'unknown';
+            }
+        }
+
+        $has['expected'] = $expected;
+
+        return $is == 'available' ? new Available($has) : new Unavailable($has);
     }
 }

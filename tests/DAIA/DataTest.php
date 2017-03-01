@@ -44,17 +44,4 @@ class DAIADataTest extends TestCase
         $c = new Chronology("2012");
         $this->assertSame("$c", '{"about":"2012"}');
     }
-
-    public function testAvailable()
-    {
-        $a = new Available('loan');
-        $this->assertSame($a->service, 'http://purl.org/ontology/dso#Loan');
-        # TODO
-    }
- 
-    public function testUnavailable()
-    {
-        $a = new Unavailable('remote');
-        $this->assertSame($a->service, 'http://purl.org/ontology/dso#Remote');
-    }
 }

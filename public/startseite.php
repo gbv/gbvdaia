@@ -2,7 +2,7 @@
 <html lang="de">
   <head>
     <meta charset="utf-8">
-    <title>daia.gbv.de</title>
+    <title>GBV-DAIA</title>
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="css/bootstrap.min.css">
@@ -23,11 +23,9 @@
         </div>
         <div id="navbar" class="collapse navbar-collapse">
           <ul class="nav navbar-nav">
-            <!--li class="active"><a href="#">Introduction</a></li-->
             <li><a href="http://purl.org/NET/DAIA">Spezifikation</a></li>
-            <li><a href="https://www.gbv.de/Verbundzentrale/serviceangebote/paia-service">PAIA-Service</a></li>
-            <!--li><a href="method2/">method2</a></li>
-			<li><a href="contact/">Contact</a></li-->
+            <li><a href="https://verbundwiki.gbv.de/x/BoA7">Konfiguration</a></li>
+            <li><a href="https://www.gbv.de/Verbundzentrale/serviceangebote/paia-service">PAIA/DAIA-Service</a></li>
           </ul>
         </div>
       </div>
@@ -35,7 +33,7 @@
 
     <div class="jumbotron">
       <div class="container">
-        <h1>GBV DAIA</h1>
+        <h1>GBV-DAIA</h1>
         <p>Zentraler DAIA-Server für den Gemeinsamen Bibliotheksverbund (GBV)</p>
       </div>
     </div>
@@ -50,7 +48,7 @@
         Der Dienst bietet lediglich <a href="#limitations">rudimenträre Abfragemöglichkeit</a>, 
         da nicht direkt auf die Ausleihsysteme der unterstützen Bibliotheken zugegriffen wird.
         Für vollständige Funktionalität wird der
-        <a href="https://www.gbv.de/Verbundzentrale/serviceangebote/paia-service">PAIA-Service</a>
+        <a href="https://www.gbv.de/Verbundzentrale/serviceangebote/paia-service">PAIA/DAIA-Service</a>
         benötigt.
       </p>
       <h2>API</h2>
@@ -126,7 +124,7 @@
       <h2>Einschränkungen und Unterschiede</h2>
       <p>
         Gegenüber dem
-        <a href="https://www.gbv.de/Verbundzentrale/serviceangebote/paia-service">PAIA-Service</a>:
+        <a href="https://www.gbv.de/Verbundzentrale/serviceangebote/paia-service">PAIA/DAIA-Service</a>:
         <ul>
           <li>Keine vollständige Übereinstimmung mit dem Ausleihsystem, vor allem bei
               Spezialfällen wie Bandlisten, Zeitschriften etc.</li>
@@ -138,7 +136,8 @@
         <ul>
           <li>DAIA 1.0.0 statt DAIA 0.5, d.h. keine <code>message</code> Felder</li>
           <li>Keine Abfrage per EPN, Barcode, ISBN, DOI oder EKI</li>
-		  <li>...</li>
+          <li>Keine <code>limitation</code> aus Kategorie <code>237A $a</code>
+              (Sonderregel für Jade Hochschule)</li>
         </ul>
       </p>
     </div>
