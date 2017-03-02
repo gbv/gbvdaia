@@ -53,7 +53,7 @@ class Request
     /**
      * Create a Request populated from superglobals `$_SERVER` and `$_GET`.
      *
-     * @throws Error for HTTP methods other than GET, HEAD, OPTIONS
+     * @throws ThrownError for HTTP methods other than GET, HEAD, OPTIONS
      */
     public static function fromGlobals(): Request
     {
@@ -78,7 +78,7 @@ class Request
      * Create a Request from PSR-7 ServerRequestInterface.
      *
      * @throws TypeError unless the argument is instance of Psr\Http\Message\ServerRequestInterface
-     * @throws Error for HTTP methods other than GET, HEAD, OPTIONS
+     * @throws ThrownError for HTTP methods other than GET, HEAD, OPTIONS
      */
     public static function fromPsr7($request): Request
     {
@@ -101,12 +101,12 @@ class Request
     }
 
     /**
-     * @throws Error for HTTP methods other than GET, HEAD, OPTIONS
+     * @throws ThrownError for HTTP methods other than GET, HEAD, OPTIONS
      */
     private static function buildRequest($method, $query, $headers): Request
     {
         if (array_search($method, ['GET','HEAD','OPTIONS']) === false) {
-            throw new Error(405, 'invalid_request', 'Unexpected HTTP verb');
+            throw new ThrownError(405, 'Unexpected HTTP verb');
         }        
         $request = new Request($query, $headers);
         $request->method = $method;

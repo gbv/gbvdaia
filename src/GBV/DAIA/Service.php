@@ -90,7 +90,7 @@ class Service
             # TODO: catch 404
             } catch (RequestException $e) {
                 $this->log->error("502");
-                throw new Error(502, 'bad_gateway', 'internal request failed');
+                throw new Error(502, 'internal request failed');
             }
         }
         if ($doc) {

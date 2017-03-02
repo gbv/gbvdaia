@@ -7,7 +7,7 @@ class ErrorTest extends TestCase
 {
     public function testError()
     {
-        $e = new Error(404, "not_found");
+        $e = new Error(404);
         $json = '{"code":404,"error":"not_found"}';
         $this->assertSame("$e", $json);
 
@@ -19,5 +19,13 @@ class ErrorTest extends TestCase
         // pretty-printed response body
         $json = "{\n    \"code\": 404,\n    \"error\": \"not_found\"\n}";
         $this->assertSame($e->getBody(), $json);
+    }
+
+    /**
+     * @expectedException DAIA\ThrownError
+     */
+    public function testThrownError()        
+    {
+        throw new ThrownError(500);
     }
 }

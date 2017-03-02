@@ -11,6 +11,12 @@ zum PAIA/DAIA-Service und zum alten DAIA-Server ist auf der Startseite
 beschrieben.
 
 
+## Demo
+
+Eine (ggf. etwas langsame) Demo-Instanz ist in der Regel unter
+<https://gbvdaia.herokuapp.com/> verfügbar.
+
+
 ## Installation
 
 Das Repository kann direkt von GitHub geklont und aktualisiert werden:
@@ -18,21 +24,46 @@ Das Repository kann direkt von GitHub geklont und aktualisiert werden:
     $ git clone https://github.com/gbv/gbvdaia.git && cd gbvdaia
 
 gbvdaia benötigt PHP 7 mit der [DOM Extension] und [Multibyte extension] sowie
-[composer]. Zusätzliche PHP-Bibliotheken sind in `composer.json` aufgeführt und
+[composer]. Unter Ubuntu 16.04 können die entsprechenden Pakete folgendermaßen
+installiert werden:
+
+    $ sudo apt-get install composer php7.0 php-xml php-mbstring
+
+Zusätzlich benötigte PHP-Bibliotheken sind in `composer.json` aufgeführt und
 werden folgendermaßen installiert:
 
     $ composer install --no-dev
 
-Anschließend muss ein Apache-Webserver so eingerichtet werden, dass unter der
-gewünschten Basis-URL des DAIA-Servers das Verzeichnis `public/` ausgeliefert
-wird. Zusätzlich wird das Apache-Modul mod_rewrite benötigt.
+### Apache unter Ubuntu
+
+Prinzipiell können verschiedene Webserver verwendet werden. Hier die Schritte
+zur Installation unter Apache2 unter Ubuntu:
+
+    $ sudo apt-get install libapache2-mod-php7.0
+
+Unter `/etc/apache2/sites-available/gbvdaia.conf` ist eine Konfigurationsdatei
+einzurichten, die das Verzeichnis `public/` ausliefert, z.B:
+
+    <VirtualHost *:80>
+        ServerName daia.gbv.de
+        ServerSignature Off
+        DocumentRoot /var/www/gbvdaia/public
+        <Directory /var/www/gbvdaia/public>
+            AllowOverride All 
+            Require all granted
+        </Directory>
+    </VirtualHost>
+
+Anschließend:
+
+    $ sudo a2ensite gbvdaia
+    $ sudo a2enmod rewrite
+    $ sudo service apache2 restart
 
 
-## Demo
+## Konfiguration
 
-Eine (langsame) Demo-Instanz ist unter <https://gbvdaia.herokuapp.com/>
-verfügbar.
-
+*folgt*
 
 ## Einbindung in eigene Programme
 

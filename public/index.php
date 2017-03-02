@@ -36,14 +36,15 @@ try {
             if ($isil) {
                 $response = $app->query($request, $isil);
             } else {
-                throw new DAIA\Error(404, 'not_found', 'Nothing found at this URL');
+                throw new DAIA\ThrownError(404, 'Nothing found at this URL');
             }
         }
     }
-} catch (DAIA\Error $e) {
-    $response = $e;
+} catch (DAIA\ThrownError $e) {
+    $response = $e->error;
 }
 
 # TODO: add Link header for multiple ids
+# TODO: support XML format
 
 $response->send($request->method, $headers ?? [], $request->callback ?? '');

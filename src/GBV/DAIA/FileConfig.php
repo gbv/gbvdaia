@@ -15,25 +15,34 @@ class FileException extends \RuntimeException
 
 class FileConfig implements Config
 {
-    private $dir;
+    protected $dir;
+
     private $log;
     private $indicators;
 
-    public function __construct(string $dir, $logLevel = LogLevel::NOTICE)
+    public function __construct(string $dir, $level = LogLevel::NOTICE)
     {
-        // log warnings and errors to STDERR by default
-        $this->log = new \Monolog\Logger('GBVDAIA');
-        $stream = new \Monolog\Handler\StreamHandler('php://stderr', $logLevel);
-        $stream->getFormatter()->ignoreEmptyContextAndExtra(true);
-        $this->log->pushHandler($stream);
-
         $this->dir = $dir;
+        $this->logger($level); // make sure to have a logger
 
         // TODO: read and enable logging configuration
     }
 
+    static function defaultLogger($level = LogLevel::NOTICE): LoggerInterface
+    {
+        // log warnings and errors to STDERR by default
+        $log = new \Monolog\Logger('GBVDAIA');
+        $stream = new \Monolog\Handler\StreamHandler('php://stderr', $level);
+        $stream->getFormatter()->ignoreEmptyContextAndExtra(true);
+        $log->pushHandler($stream);
+        return $log;
+    }
+
     public function logger(): LoggerInterface
     {
+        if (!$this->log) {
+            $this->log = $this->defaultLogger();
+        }
         return $this->log;
     }
 

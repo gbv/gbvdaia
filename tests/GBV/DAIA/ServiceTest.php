@@ -10,7 +10,7 @@ use DAIA\Available;
 use DAIA\Unavailable; 
 use Psr\Log\LogLevel;
 
-define(EXAMPLES, dirname(__FILE__)."/examples");
+define('EXAMPLES', dirname(__FILE__)."/examples");
 
 
 class ServiceTest extends TestCase {
