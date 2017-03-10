@@ -5,6 +5,11 @@ namespace GBV\DAIA;
 
 use PICA\Field;
 
+/**
+ * PICA+ holding record stripped down to information required for DAIA.
+ *
+ * @package GBVDAIA
+ */
 class Holding
 {
     public $epn;        # 201@ $e : EPN

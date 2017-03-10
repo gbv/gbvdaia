@@ -5,6 +5,7 @@ namespace GBV\DAIA;
 
 use Psr\Log\LoggerInterface;
 
+/** @package GBVDAIA */
 interface Config
 {
     public function sst(string $isil, string $sst): array;

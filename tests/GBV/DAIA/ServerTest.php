@@ -13,17 +13,17 @@ use Psr\Log\LogLevel;
 define('EXAMPLES', dirname(__FILE__)."/examples");
 
 
-class ServiceTest extends TestCase {
+class ServerTest extends TestCase {
 
     public function testConstructor() {
         $config = new FileConfig('-', LogLevel::CRITICAL );
-        $service = new Service($config);
+        $service = new Server($config);
         $this->assertTrue(!!$service);
     }
 
     public function testConvertHolding() {
         $config = new FileConfig( EXAMPLES, LogLevel::ERROR );
-        $service = new Service($config);
+        $service = new Server($config);
 
         $holding = new Holding();
     	$holding->epn = '98765';

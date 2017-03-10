@@ -3,7 +3,11 @@ declare(strict_types=1);
 
 namespace PICA;
 
-
+/**
+ * Stores a single filed of a PICA+ record.
+ *
+ * @package PICA
+ */
 class Field
 {
     private $tag;
@@ -28,11 +32,13 @@ class Field
     /**
      * Get tag, occurrence, subfields or the first or all subfield values.
      *
-     *     $field->tag;         # tag                (string)
-     *     $field->occ;         # occurrence         (string or null)
-     *     $field->subfields;   # subfields          (array)
-     *     $field->a;           # first subfield 'a' (string)
-     *     $field->aa;          # all subfields 'a'  (array)
+     * ~~~
+     * $field->tag;         # tag                (string)
+     * $field->occ;         # occurrence         (string or null)
+     * $field->subfields;   # subfields          (array)
+     * $field->a;           # first subfield 'a' (string)
+     * $field->aa;          # all subfields 'a'  (array)
+     * ~~~
      */
     function __get($name) {
         if (property_exists($this, $name)) {
@@ -47,6 +53,9 @@ class Field
         }
     }
 
+    /**
+     * Get the first matching subfield value.
+     */
     function value($name) {
         $sf = $this->subfields;
         for ($i=0; $i<count($sf); $i+=2) {
@@ -55,7 +64,10 @@ class Field
             }
         }
     }
-    
+
+    /**
+     * Get all subfield values.
+     */
     function values($name) {
         $values = [];
         $sf = $this->subfields;

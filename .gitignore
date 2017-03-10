@@ -3,6 +3,10 @@ vendor/
 phpunit.xml
 clover.xml
 .php_cs.cache
+phpdoc/
 
 # config files
 config
+
+# API documentation
+docs/

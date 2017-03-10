@@ -13,7 +13,6 @@ use DAIA\Available;
 use DAIA\Unavailable;
 
 use GBV\DocumentID;
-use GBV\ISIL;
 use GBV\DAIA\Record;
 
 use GuzzleHttp\Client;
@@ -21,12 +20,14 @@ use GuzzleHttp\Exception\RequestException;
 
 use Monolog\Logger;
 
-class Service
+/** @package GBVDAIA */
+class Server extends \DAIA\Server
 {
     protected $config;
     protected $log;
     protected $client;
 
+    public $isil;
 
     public function __construct(Config $config)
     {
@@ -53,15 +54,10 @@ class Service
         ]);
     }
 
-
-    public static function isilFromPath(string $path)
-    {
-        if (preg_match('!^/isil/(.+)!', $path, $match) and ISIL::ok($match[1])) {
-            return $match[1];
-        }
-    }
-
-    public function query($request, $isil=null): Response
+    /**
+     * @throws \DAIA\Error
+     */
+    public function query(\DAIA\Request $request): \DAIA\Response
     {
         // DAIA Request object: INFO
         # $this->log->info('request', ['request'=>$request, 'isil' => $isil]);
@@ -69,8 +65,8 @@ class Service
 
         $response = new Response();
 
-        if ($isil) {
-            $uri = "http://uri.gbv.de/organization/isil/$isil";
+        if ($this->isil) {
+            $uri = "http://uri.gbv.de/organization/isil/".$this->isil;
             # TODO: check whether Org exists and get Organization name
             #$xml = $this->client->get('http://unapi.gbv.de/', [
             $response->organization = new Entity(['uri'=>$uri]);
@@ -83,7 +79,7 @@ class Service
 
         # TODO: handle multiple request IDs
 
-        $id = DocumentID::parse($request->ids[0], $isil);
+        $id = DocumentID::parse($request->ids[0], $this->isil);
         if ($id) {
             try {
                 $doc = $this->queryDocument($id);
@@ -97,7 +93,7 @@ class Service
             $response->document[] = $doc;
         }
         
-        $response->setLanguage('de');
+        $response->language = 'de';
 
         return $response;
     }

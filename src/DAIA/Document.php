@@ -3,6 +3,12 @@ declare(strict_types=1);
 
 namespace DAIA;
 
+/**
+ * Information about a document.
+ *
+ * See <https://purl.org/NET/DAIA#documents>
+ * @package DAIA
+ */
 class Document extends Data
 {
     public $id;

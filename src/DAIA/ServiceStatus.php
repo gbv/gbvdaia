@@ -3,6 +3,12 @@ declare(strict_types=1);
 
 namespace DAIA;
 
+/**
+ * Information about an available or unavailable service.
+ *
+ * See <https://purl.org/NET/DAIA#services>
+ * @package DAIA
+ */
 abstract class ServiceStatus extends Data
 {
     public $service;

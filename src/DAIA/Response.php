@@ -3,6 +3,12 @@ declare(strict_types=1);
 
 namespace DAIA;
 
+/**
+ * A DAIA response body.
+ *
+ * See <https://purl.org/NET/DAIA#daia-response>
+ * @package DAIA
+ */
 class Response extends ResponseData
 {
     public $document = [];

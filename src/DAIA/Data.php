@@ -5,6 +5,9 @@ namespace DAIA;
 
 /**
  * Abstract base class of objects in the DAIA data model.
+ * 
+ * See <https://purl.org/NET/DAIA#data-format>
+ * @package DAIA
  */
 class Data implements \JsonSerializable
 {
@@ -13,13 +16,14 @@ class Data implements \JsonSerializable
     {
         foreach ($this as $field => $value) {
             if (isset($data[$field])) {
+                // TODO: call constructor if needed
                 $this->$field = $data[$field];
             }
         }
     }
 
     /**
-     * Returns a copy of the data structure to be serialized to JSON.
+     * Return the data to be serialized to JSON.
      *
      * @param boolean $root whether this is the root element
      */
@@ -38,7 +42,7 @@ class Data implements \JsonSerializable
 
         return (object)$json;
     }
-    
+
     /**
      * Serialize to JSON in string context for debugging.
      */

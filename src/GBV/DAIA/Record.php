@@ -6,7 +6,9 @@ namespace GBV\DAIA;
 use PICA\Field;
 
 /**
- * PICA+ record stripped down to information required for DATA.
+ * PICA+ record stripped down to information required for DAIA.
+ *
+ * @package GBVDAIA
  */
 class Record
 {

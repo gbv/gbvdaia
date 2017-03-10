@@ -3,6 +3,12 @@ declare(strict_types=1);
 
 namespace DAIA;
 
+/**
+ * Query parameters and request headers sent to a DAIA server.
+ *
+ * See <https://purl.org/NET/DAIA#request-and-response>
+ * @package DAIA
+ */
 class Request
 {
     public $method = 'GET'; // GET, HEAD, OPTIONS
@@ -52,8 +58,6 @@ class Request
 
     /**
      * Create a Request populated from superglobals `$_SERVER` and `$_GET`.
-     *
-     * @throws ThrownError for HTTP methods other than GET, HEAD, OPTIONS
      */
     public static function fromGlobals(): Request
     {
@@ -78,7 +82,6 @@ class Request
      * Create a Request from PSR-7 ServerRequestInterface.
      *
      * @throws TypeError unless the argument is instance of Psr\Http\Message\ServerRequestInterface
-     * @throws ThrownError for HTTP methods other than GET, HEAD, OPTIONS
      */
     public static function fromPsr7($request): Request
     {
@@ -100,14 +103,8 @@ class Request
         return static::buildRequest($request->getMethod(), $request->getQueryParams(), $headers);
     }
 
-    /**
-     * @throws ThrownError for HTTP methods other than GET, HEAD, OPTIONS
-     */
     private static function buildRequest($method, $query, $headers): Request
     {
-        if (array_search($method, ['GET','HEAD','OPTIONS']) === false) {
-            throw new ThrownError(405, 'Unexpected HTTP verb');
-        }        
         $request = new Request($query, $headers);
         $request->method = $method;
         return $request;

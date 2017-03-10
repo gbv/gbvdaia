@@ -1,11 +1,6 @@
 info:
-	@echo "Usage: make install|test|debug"
+	@echo "Usage: make install|test|debug|doc"
 
-install:
-	composer install
-
-test:
-	composer test
-
-debug:
-	composer debug
+# pass any target to composer
+$(MAKECMDGOALS):
+	composer $(MAKECMDGOALS)

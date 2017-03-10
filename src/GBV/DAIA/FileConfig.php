@@ -9,10 +9,12 @@ use Psr\Log\LoggerInterface;
 use Symfony\Component\Yaml\Yaml;
 use Symfony\Component\Yaml\Exception\ParseException;
 
+/** @package GBVDAIA */
 class FileException extends \RuntimeException
 {
 }
 
+/** @package GBVDAIA */
 class FileConfig implements Config
 {
     protected $dir;
@@ -24,7 +26,11 @@ class FileConfig implements Config
     {
         $this->dir = $dir;
         $this->logger($level); // make sure to have a logger
+        $this->readConfig();
+    }
 
+    protected function readConfig()
+    {
         // TODO: read and enable logging configuration
     }
 

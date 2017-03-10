@@ -1,39 +1,43 @@
 {
-    "name": "gbv/gbvdaia",
-    "description": "Zentraler DAIA-Server für den GBV",
-    "type": "project",
-    "autoload": {
-        "psr-4": {
-            "": "src/"
-        }
-    },
-    "require": {
-        "php": ">=7.0.0",
-        "psr/log": "1.0.2",
-        "guzzlehttp/guzzle": "~6.0",
-        "easyrdf/easyrdf": "~0.9.0",
-        "monolog/monolog": ">=1.11.0",
-        "symfony/yaml": "^3.2"
-    },
-    "license": "AGPL-3.0+",
-    "authors": [
-        {
-            "name": "Jakob Voss",
-            "email": "voss@gbv.de"
-        }
-    ],
-    "require-dev": {
-        "phpunit/phpunit": ">=6.0.0"
-    },
-    "scripts": {
-        "test": [
-            "vendor/bin/phpunit tests --verbose"
-        ],
-        "debug": [
-            "vendor/bin/phpunit tests --debug"
-        ],
-        "travis-test": [
-            "vendor/bin/phpunit tests --debug --coverage-clover clover.xml"
-        ]
+  "authors": [
+    {
+      "email": "voss@gbv.de",
+      "name": "Jakob Voß"
     }
+  ],
+  "autoload": {
+    "psr-4": {
+      "": "src/"
+    }
+  },
+  "description": "Zentraler DAIA-Server für den GBV",
+  "license": "AGPL-3.0+",
+  "name": "gbv/gbvdaia",
+  "require": {
+    "easyrdf/easyrdf": "~0.9.0",
+    "guzzlehttp/guzzle": "~6.0",
+    "monolog/monolog": ">=1.11.0",
+    "php": ">=7.0.0",
+    "psr/log": "1.0.2",
+    "symfony/yaml": "^3.2"
+  },
+  "require-dev": {
+    "phpunit/phpunit": ">=6.0.0",
+    "phpdocumentor/phpdocumentor": ">=2.9"
+  },
+  "scripts": {
+    "debug": [
+      "vendor/bin/phpunit tests --debug"
+    ],
+    "doc": [
+      "vendor/bin/phpdoc"
+    ],
+    "test": [
+      "vendor/bin/phpunit tests --verbose"
+    ],
+    "travis-test": [
+      "vendor/bin/phpunit tests --debug --coverage-clover clover.xml"
+    ]
+  },
+  "type": "project"
 }

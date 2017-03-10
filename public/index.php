@@ -1,50 +1,30 @@
 <?php
+/**
+ * GBV DAIA application main script.
+ *
+ * All HTTP queries except static files must be routed to this script.
+ */
 
 include __DIR__.'/../vendor/autoload.php';
 
-$headers = [];
-# $headers['Link'] = "<$profile>; rel=\"profile\""; // TODO
+$request = DAIA\Request::fromGlobals();
+    
+$path = $_SERVER['PATH_INFO'] ?? '/';
 
-try {
-    $request = DAIA\Request::fromGlobals();
-
-    // TODO: move into DAIA namespace?
-    if ($request->method == 'OPTIONS') {
-        $headers['Access-Control-Allow-Headers'] = ['Authorization, Content-Type'];
-        $headers['Access-Control-Allow-Methods'] = ['GET, HEAD, OPTIONS'];
-        $response = new DAIA\Response(); 
-    } 
-    else 
-    {
-        // TODO: move into DAIA\Request
-        $path = $_SERVER['PATH_INFO'] ?? '';
-
-        if (!count($request->ids) && $path === '') {
-            include 'startseite.php';
-            exit;
-        }
-
-        // get response from DAIA Service
-        $config = new GBV\DAIA\FileConfig('../config', Psr\Log\LogLevel::DEBUG);
-
-        $app = new GBV\DAIA\Service($config);
-
-        if ($path == '') {
-            $response = $app->query($request);
-        } else {
-            $isil = GBV\DAIA\Service::isilFromPath($path);
-            if ($isil) {
-                $response = $app->query($request, $isil);
-            } else {
-                throw new DAIA\ThrownError(404, 'Nothing found at this URL');
-            }
-        }
-    }
-} catch (DAIA\ThrownError $e) {
-    $response = $e->error;
+if ( $request->method != 'OPTIONS' && (!$path or $path == '/') and !count($request->ids) ) {
+    include 'startseite.php';
+    exit;
 }
 
-# TODO: add Link header for multiple ids
-# TODO: support XML format
+# TODO: catch errors in config_
+$config = '../config';
+$level  = Psr\Log\LogLevel::DEBUG;
+$config = new GBV\DAIA\FileConfig($config, $level);
+#$config = new GBV\DAIA\GitConfig($config, $level);
 
-$response->send($request->method, $headers ?? [], $request->callback ?? '');
+$serverFactory = new GBV\DAIA\ServerFactory($config);
+$server = $serverFactory->makeServer($path);
+
+$response = $server->queryResponse($request);
+
+$response->send();
