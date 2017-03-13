@@ -32,6 +32,10 @@ class FileConfig implements Config
     protected function readConfig()
     {
         // TODO: read and enable logging configuration
+        // move to logging class?
+        // log standard to default log
+        // send critical errors to critical file
+        // log everything to detailled log
     }
 
     static function defaultLogger($level = LogLevel::NOTICE): LoggerInterface

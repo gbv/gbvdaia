@@ -18,5 +18,7 @@ class ResponseTest extends \PHPUnit\Framework\TestCase
 			'Content-Type' => ['application/json; charset=utf-8'],
 			'X-DAIA-Version' => ['1.0.0'],
         ]);
+
+        $this->assertSame($res->getHeaders('foo')['Content-Type'], ['application/javascript']);
     }
 }

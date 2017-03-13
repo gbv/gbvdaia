@@ -34,7 +34,7 @@ class Server extends \DAIA\Server
         $this->config = $config;
         $this->log = $config->logger();
 
-        // configure HTTP logging
+        // configure HTTP request logging
         $stack = \GuzzleHttp\HandlerStack::create();
         $stack->unshift(\GuzzleHttp\Middleware::log($this->log,
             new \GuzzleHttp\MessageFormatter("{method} {uri} {code}"),
@@ -57,7 +57,7 @@ class Server extends \DAIA\Server
     /**
      * @throws \DAIA\Error
      */
-    public function queryImplementation(\DAIA\Request $request): \DAIA\Response
+    public function queryHandler(\DAIA\Request $request): \DAIA\Response
     {
         // DAIA Request object: INFO
         # $this->log->info('request', ['request'=>$request, 'isil' => $isil]);
@@ -96,6 +96,10 @@ class Server extends \DAIA\Server
         $response->language = 'de';
 
         return $response;
+    }
+    
+    protected function exceptionHandler($context) {
+        $this->log->critical('Unexpected error', $context);
     }
 
     public function queryDocument(DocumentID $id)

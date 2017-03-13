@@ -21,8 +21,8 @@ class ErrorServerTest extends TestCase
     /**
      * @expectedException DAIA\Error
      */
-    public function testQueryImplementation() 
+    public function testQueryHandler() 
     {        
-        $this->server->queryImplementation(new Request());
+        $this->server->queryHandler(new Request());
     }
 }

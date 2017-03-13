@@ -8,9 +8,16 @@ class ServerTest extends \PHPUnit\Framework\TestCase
     public function setUp()
     {        
         $this->server = new class extends Server {
-			public function queryImplementation(Request $request): Response {
+            public $context;
+			public function queryHandler(Request $request): Response {
+                if (count($request->ids)>1) {
+                    1 % 0;
+                }
 				return new Response();
 			}
+            public function exceptionHandler($context) {
+                $this->context = $context;
+            }
 		};
     }
 
@@ -36,5 +43,17 @@ class ServerTest extends \PHPUnit\Framework\TestCase
         $res = $this->server->query($req);
 
         $this->assertSame(405, $res->getStatusCode());
+    }
+
+    public function testUnexpectedServerError()        
+    {
+        $req = Request::fromGlobals([], ['id'=>'x:1|x:2']);
+        $res = $this->server->query($req);
+
+        $this->assertSame(500, $res->getStatusCode());
+        $error = $this->server->context;
+        $this->assertSame($error['server'], $this->server);
+        $this->assertSame($error['request'], $req);
+        $this->assertInstanceOf('DivisionByZeroError', $error['exception']);
     }
 } 

@@ -17,7 +17,7 @@ class ErrorServer extends Server
         $this->error = $error;
     }
     
-    public function queryImplementation(Request $request): Response
+    public function queryHandler(Request $request): Response
     {
         throw $this->error;
     }

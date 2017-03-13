@@ -5,8 +5,9 @@ clover.xml
 .php_cs.cache
 phpdoc/
 
-# config files
-config
+# config and log files
+config/
+log/
 
 # API documentation
 docs/
