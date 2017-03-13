@@ -57,7 +57,7 @@ class Server extends \DAIA\Server
     /**
      * @throws \DAIA\Error
      */
-    public function query(\DAIA\Request $request): \DAIA\Response
+    public function queryImplementation(\DAIA\Request $request): \DAIA\Response
     {
         // DAIA Request object: INFO
         # $this->log->info('request', ['request'=>$request, 'isil' => $isil]);

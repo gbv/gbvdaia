@@ -59,13 +59,15 @@ class Request
     /**
      * Create a Request populated from superglobals `$_SERVER` and `$_GET`.
      */
-    public static function fromGlobals(): Request
+    public static function fromGlobals(array $server=null, array $get=null): Request
     {
+        $server = $server ?? $_SERVER;
+        
         if (function_exists('getallheaders')) {
             $headers = getallheaders();
         } else {
             $headers = [];
-            foreach ($_SERVER as $name => $value) {
+            foreach ($server as $name => $value) {
                 if (substr($name, 0, 5) != 'HTTP_') {
                     continue;
                 }
@@ -74,8 +76,8 @@ class Request
             }
         }
 
-        $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
-        return static::buildRequest($method, $_GET, $headers);
+        $method = $server['REQUEST_METHOD'] ?? 'GET';
+        return static::buildRequest($method, $get ?? $_GET, $headers);
     }
 
     /**

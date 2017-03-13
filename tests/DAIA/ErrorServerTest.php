@@ -12,17 +12,17 @@ class ErrorServerTest extends TestCase
         $this->server = new ErrorServer(new Error(404,'not found'));
     }
 
-    public function testQueryResponse() 
+    public function testQuery() 
     {        
-        $response = $this->server->queryResponse(new Request());
+        $response = $this->server->query(new Request());
         $this->assertEquals($response, $this->server->error->response);
     }
 
     /**
      * @expectedException DAIA\Error
      */
-    public function testQuery() 
+    public function testQueryImplementation() 
     {        
-        $this->server->query(new Request());
+        $this->server->queryImplementation(new Request());
     }
 }

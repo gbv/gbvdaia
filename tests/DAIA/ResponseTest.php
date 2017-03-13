@@ -1,9 +1,7 @@
 <?php
 namespace DAIA;
 
-use PHPUnit\Framework\TestCase;
-
-class ResponseTest extends TestCase
+class ResponseTest extends \PHPUnit\Framework\TestCase
 {
     public function testResponse()
     {
@@ -14,9 +12,7 @@ class ResponseTest extends TestCase
         $this->assertSame(200, $res->getStatusCode());
         $this->assertRegExp("/^\/\*\*\/foo\($body\);$/", $res->getBody('foo'));
         
-        $headers = $res->getHeaders();
-        ksort($headers);
-        $this->assertSame($headers, [
+        $this->assertSame($res->getHeaders(), [
 			'Access-Control-Allow-Origin' => ['*'],
 			'Content-Language' => ['en'],
 			'Content-Type' => ['application/json; charset=utf-8'],

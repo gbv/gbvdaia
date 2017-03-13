@@ -42,6 +42,7 @@ abstract class ResponseData extends Data
             $headers['Content-Type'] = ['application/json; charset=utf-8'];
         }
 
+        ksort($headers);
         return $headers;
     }
 
