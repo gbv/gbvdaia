@@ -29,11 +29,13 @@ class GitConfigTest extends TestCase {
     public function testGitConfig() {
         $dir = $this->tempDir();
         $later = time() + 9999;
-        $conf = new GitConfig($dir, $later, "http://example.org/");
-        $this->assertSame($conf->origin(), "http://example.org/");
-        $this->assertSame($conf->lastFetch(), 0);       
+        $logger = new Logger();
 
-        $conf = new GitConfig($dir, $later);
+        $conf = new GitConfig($dir, "http://example.org/", $later, $logger);
+        $this->assertSame($conf->origin(), "http://example.org/");
+        $this->assertSame($conf->lastFetch(), 0);
+
+        $conf = new GitConfig($dir, null, $later, $logger);
         $this->assertSame($conf->origin(), "http://example.org/");
     }
 }

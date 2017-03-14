@@ -1,10 +1,8 @@
-<?php
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace GBV\DAIA;
 
 use DAIA\Entity;
-use Psr\Log\LogLevel;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Yaml\Yaml;
 use Symfony\Component\Yaml\Exception\ParseException;
@@ -17,20 +15,23 @@ class FileException extends \RuntimeException
 /** @package GBVDAIA */
 class FileConfig implements Config
 {
-    protected $dir;
+    use \Psr\Log\LoggerAwareTrait;
 
-    private $log;
+    protected $dir;
+    protected $log;
+
     private $indicators;
 
-    public function __construct(string $dir, $level = LogLevel::NOTICE)
+    public function __construct(string $dir, LoggerInterface $logger=null)
     {
+        $this->setLogger($logger ?? new Logger());
         $this->dir = $dir;
-        $this->logger($level); // make sure to have a logger
         $this->readConfig();
     }
 
     protected function readConfig()
     {
+        $this->logger->warn("readConfig not implemented yet!");
         // TODO: read and enable logging configuration
         // move to logging class?
         // log standard to default log
@@ -38,26 +39,7 @@ class FileConfig implements Config
         // log everything to detailled log
     }
 
-    static function defaultLogger($level = LogLevel::NOTICE): LoggerInterface
-    {
-        // log warnings and errors to STDERR by default
-        $log = new \Monolog\Logger('GBVDAIA');
-        $stream = new \Monolog\Handler\StreamHandler('php://stderr', $level);
-        $stream->getFormatter()->ignoreEmptyContextAndExtra(true);
-        $log->pushHandler($stream);
-        return $log;
-    }
-
-    public function logger(): LoggerInterface
-    {
-        if (!$this->log) {
-            $this->log = $this->defaultLogger();
-        }
-        return $this->log;
-    }
-
-
-    private function readFile($file): string
+    protected static function readFile($file): string
     {
         $content = @file_get_contents($file);
         if ($content === false) {
@@ -71,13 +53,13 @@ class FileConfig implements Config
         $this->indicators = [];
         $file = $this->dir . "/ausleihindikator.yaml";
         try {
-            $this->indicators = Yaml::parse($this->readFile($file));
-            $this->log->debug("Read $file");
+            $this->indicators = Yaml::parse(static::readFile($file));
+            $this->logger->debug("Read $file");
             # TODO: validate file
         } catch (FileException $e) {
-            $this->log->error($e->getMessage());
+            $this->logger->error($e->getMessage());
         } catch (ParseException $e) {
-            $this->log->error("Failed to parse $file: ".$e->getMessage());
+            $this->logger->error("Failed to parse $file: ".$e->getMessage());
         }
     }
 
@@ -96,7 +78,7 @@ class FileConfig implements Config
         $services = $dbconfig[$indicator] ?? $standard[$indicator] ?? [];
 		krsort($services);
 
-        $this->log->debug("loanIndicator", [ 
+        $this->logger->debug("loanIndicator", [ 
             'dbkey'     => $dbkey, 
             'indicator' => $indicator,
             'result'    => $services

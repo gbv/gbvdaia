@@ -1,8 +1,8 @@
-<?php
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace GBV\DAIA;
 
+use DAIA\Request;
 use DAIA\Response;
 use DAIA\Error;
 use DAIA\Document;
@@ -15,6 +15,7 @@ use DAIA\Unavailable;
 use GBV\DocumentID;
 use GBV\DAIA\Record;
 
+use Psr\Log\LoggerInterface;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
 
@@ -23,24 +24,25 @@ use Monolog\Logger;
 /** @package GBVDAIA */
 class Server extends \DAIA\Server
 {
+    use \Psr\Log\LoggerAwareTrait;
+
     protected $config;
-    protected $log;
     protected $client;
 
     public $isil;
 
-    public function __construct(Config $config)
+    public function __construct(Config $config, LoggerInterface $logger=null)
     {
+        $this->setLogger($logger ?? new Logger());
         $this->config = $config;
-        $this->log = $config->logger();
 
         // configure HTTP request logging
         $stack = \GuzzleHttp\HandlerStack::create();
-        $stack->unshift(\GuzzleHttp\Middleware::log($this->log,
+        $stack->unshift(\GuzzleHttp\Middleware::log($logger,
             new \GuzzleHttp\MessageFormatter("{method} {uri} {code}"),
             Logger::INFO    // internal HTTP request: INFO
         ));
-        $stack->unshift(\GuzzleHttp\Middleware::log($this->log,
+        $stack->unshift(\GuzzleHttp\Middleware::log($logger,
             new \GuzzleHttp\MessageFormatter("{res_headers}\n{res_body}"),
             Logger::DEBUG   // internal HTTP response: DEBUG
         ));
@@ -57,11 +59,10 @@ class Server extends \DAIA\Server
     /**
      * @throws \DAIA\Error
      */
-    public function queryHandler(\DAIA\Request $request): \DAIA\Response
+    public function queryHandler(Request $request): \DAIA\Response
     {
         // DAIA Request object: INFO
-        # $this->log->info('request', ['request'=>$request, 'isil' => $isil]);
-
+        # $this->logger->info('request', ['request'=>$request, 'isil' => $isil]);
 
         $response = new Response();
 
@@ -73,7 +74,7 @@ class Server extends \DAIA\Server
         }
     
         if (!count($request->ids)) {
-            $this->log->notice('missing request identifier');
+            $this->logger->notice('missing request identifier');
             return $response;
         }
 
@@ -85,7 +86,7 @@ class Server extends \DAIA\Server
                 $doc = $this->queryDocument($id);
             # TODO: catch 404
             } catch (RequestException $e) {
-                $this->log->error("502");
+                $this->logger->error("502");
                 throw new Error(502, 'internal request failed');
             }
         }
@@ -98,8 +99,13 @@ class Server extends \DAIA\Server
         return $response;
     }
     
-    protected function exceptionHandler($context) {
-        $this->log->critical('Unexpected error', $context);
+    protected function exceptionHandler(Request $request, \Throwable $exception)
+    {
+        $this->logger->critical('Unexpected error', [
+            'request' => $request,
+            'server' => $this,
+            'exception' => $exception,
+        ]);
     }
 
     public function queryDocument(DocumentID $id)
@@ -135,7 +141,7 @@ class Server extends \DAIA\Server
                 if ($holding->epn) {
                     $doc->item[] = $this->convertHolding($id, $holding);
                 } else {
-					$this->log->warn('holding without epn', (array)$holding);
+					$this->logger->warn('holding without epn', (array)$holding);
 				}
             }
         }
@@ -145,7 +151,7 @@ class Server extends \DAIA\Server
 
     public function convertHolding(DocumentID $id, Holding $holding)
     {
-		$this->log->debug('convertHolding', (array)$holding);
+		$this->logger->debug('convertHolding', (array)$holding);
 
         $item = new Item([
 			'id' => "http://uri.gbv.de/document/{$id->dbkey}:epn:{$holding->epn}",
@@ -200,7 +206,7 @@ class Server extends \DAIA\Server
 
     public function holdingService(Holding $holding, $service, $config): ServiceStatus
     {
-        $this->log->debug('holdingService', ['service'=>$service, 'config' => $config]);
+        $this->logger->debug('holdingService', ['service'=>$service, 'config' => $config]);
 
         $is = $config['is'] ?? 'unavailable';
         $has = [ 'service' => $service ];

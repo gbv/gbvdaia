@@ -1,9 +1,9 @@
-<?php
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace GBV\DAIA;
 
 use GBV\ISIL;
+use Psr\Log\LoggerInterface;
 
 /**
  * Build instances of DAIA Servers.
@@ -12,10 +12,13 @@ use GBV\ISIL;
  */
 class ServerFactory
 {
+    use \Psr\Log\LoggerAwareTrait;
+
     private $config;
 
-    public function __construct(Config $config)
+    public function __construct(Config $config, LoggerInterface $logger=null)
     {
+        $this->setLogger($logger ?? new Logger());
         $this->config = $config;
     }
 
@@ -31,8 +34,8 @@ class ServerFactory
             return new \DAIA\ErrorServer($error);
         }
         
-        $server = new Server($this->config);
-        $server->isil = $isil;
+        $server = new Server($this->config, $this->logger);
+        $server->isil = $isil ?? null;
 
         return $server;
     }

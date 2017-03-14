@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace GBV\DAIA;
 
+use Psr\Log\LoggerInterface;
+
 /** @package GBVDAIA */
 class GitConfig extends FileConfig
 {
@@ -11,9 +13,9 @@ class GitConfig extends FileConfig
 	 *
      * @throws ConfigException
 	 */
-    public function __construct(string $dir, int $age, string $remote=null)
+    public function __construct(string $dir, $remote, int $update, LoggerInterface $logger=null)
     {
-		$this->logger();
+        $this->setLogger($logger ?? new Logger());
 
         if (!is_dir($dir) and !@mkdir($dir)) {
 			throw new ConfigException("missing config directory $dir");
@@ -23,10 +25,10 @@ class GitConfig extends FileConfig
 
 		try {
 			if (!is_dir("$dir/.git")) {
-				$this->logger()->info("setting up git repository from $remote");
-				$this->git("init .");
+				$logger->info("setting up git repository from $remote");
+                $this->git("init .");
                 if ($remote) {
-    				$this->git("remote add origin $remote");
+    			    $this->git("remote add origin $remote");
                 }
             }
 
@@ -41,10 +43,10 @@ class GitConfig extends FileConfig
             }
 
             # TODO: if this fails, don't die!
-            if (time() - $age > $this->lastFetch()) {
-                $this->logger()->info("pull git from remote");
+            if (time() - $update > $this->lastFetch()) {
+                $logger->info("pull git from remote");
                 $pull = $this->git("pull origin master");
-                $this->logger()->info($pull);
+                $logger->info($pull);
             }
 
 		} catch(\RuntimeException $e) {

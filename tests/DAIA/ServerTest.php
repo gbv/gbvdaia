@@ -8,15 +8,19 @@ class ServerTest extends \PHPUnit\Framework\TestCase
     public function setUp()
     {        
         $this->server = new class extends Server {
-            public $context;
+            public $error;
 			public function queryHandler(Request $request): Response {
                 if (count($request->ids)>1) {
                     1 % 0;
                 }
 				return new Response();
 			}
-            public function exceptionHandler($context) {
-                $this->context = $context;
+            public function exceptionHandler(Request $request, \Throwable $exception) {
+                $this->error = [
+                    'request' => $request,
+                    'server' => $this,
+                    'exception' => $exception
+                ];
             }
 		};
     }
@@ -51,7 +55,7 @@ class ServerTest extends \PHPUnit\Framework\TestCase
         $res = $this->server->query($req);
 
         $this->assertSame(500, $res->getStatusCode());
-        $error = $this->server->context;
+        $error = $this->server->error;
         $this->assertSame($error['server'], $this->server);
         $this->assertSame($error['request'], $req);
         $this->assertInstanceOf('DivisionByZeroError', $error['exception']);

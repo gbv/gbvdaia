@@ -16,14 +16,16 @@ define('EXAMPLES', dirname(__FILE__)."/examples");
 class ServerTest extends TestCase {
 
     public function testConstructor() {
-        $config = new FileConfig('-', LogLevel::CRITICAL );
-        $service = new Server($config);
+        $logger = new Logger();
+        $config = new FileConfig('-', $logger);
+        $service = new Server($config, $logger);
         $this->assertTrue(!!$service);
     }
 
     public function testConvertHolding() {
-        $config = new FileConfig( EXAMPLES, LogLevel::ERROR );
-        $service = new Server($config);
+        $logger = new Logger();
+        $config = new FileConfig(EXAMPLES, $logger);
+        $service = new Server($config, $logger);
 
         $holding = new Holding();
     	$holding->epn = '98765';

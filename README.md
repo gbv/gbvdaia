@@ -34,6 +34,10 @@ werden folgendermaßen installiert:
 
     $ composer install --no-dev
 
+Zum Testen kann der DAIA-Server auch auf der Kommandozeile gestartet werden:
+
+    $ php -S localhost:8080 public/index.php
+
 ### Apache unter Ubuntu
 
 Prinzipiell können verschiedene Webserver verwendet werden. Hier die Schritte
@@ -63,7 +67,11 @@ Anschließend:
 
 ## Konfiguration
 
-*folgt*
+Die Datei `public/config.php` wird, falls vorhanden, eingelesen um grundlegende
+Konfigurationswerte zu setzen. Siehe `public/config.example.php` für ein Beispiel.
+
+Die eigentliche Konfiguration befindet sich in Konfigurationsverzeichnis, das
+standardmäßig in einem Git-Repository verwaltet wird.
 
 ## Einbindung in eigene Programme
 
@@ -72,9 +80,9 @@ installiert und direkt in PHP aufgerufen werden:
 
 ~~~php
 $config   = new GBV\DAIA\FileConfig($config_directory);
-$service  = new GBV\DAIA\Service($config);
+$server   = new GBV\DAIA\Server($config, $logger);
 $request  = new DAIA\Request([ 'id' => $id ]);
-$response = $service->query($request);  # liefert DAIA\Response oder DAIA\Error
+$response = $server->query($request);  # liefert DAIA\Response oder DAIA\Error
 ~~~
 
 Das konkrete Verhalten des DAIA-Service hängt von der Konfiguration ab. Bei

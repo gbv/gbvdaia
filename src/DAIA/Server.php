@@ -31,7 +31,10 @@ abstract class Server
 {
     public abstract function queryHandler(Request $request): Response;
 
-    protected function exceptionHandler($context) { }
+    protected function exceptionHandler(Request $request, \Throwable $exception)
+    {
+       // return true to rethrow exception 
+    }
 
     public function query(Request $request): ResponseData
     {
@@ -47,14 +50,17 @@ abstract class Server
         } catch(Error $e) {
             return $e->response;
         } catch(\Throwable $e) {
-            if ($this->exceptionHandler([
-                'request' => $request,
-                'server' => $this, 
-                'exception' => $e
-            ])) {
-                throw $e;
+            $rethrow = False;
+            try {
+                $rethrow = $this->exceptionHandler($request, $e);
+            } catch (\Throwable $e) {
+                // ignore broken exception handlers
             }
-            return new ErrorResponse(500, 'Unexpected internal server error');
+            if ($rethrow) {
+                throw $e;
+            } else {
+                return new ErrorResponse(500, 'Unexpected internal server error');
+            }
         }
     }
 }
