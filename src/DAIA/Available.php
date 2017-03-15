@@ -1,5 +1,4 @@
-<?php
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace DAIA;
 
@@ -11,5 +10,19 @@ namespace DAIA;
  */
 class Available extends ServiceStatus
 {
-    public $delay;
+    protected $delay;
+
+    protected function setDelay($value) {
+        try {
+            $value = (string)$value;
+            if ($value !== 'unknown') {
+                // XML Schema datatype xsd:duration
+                $interval = $value[0]=='-' ? substr($value,1) : $value;
+                if (!new \DateInterval($interval) or strpos($value,':')) {
+                    return;
+                }
+            }
+            $this->delay = $value;
+        } catch(\Exception $e) { }
+    }
 }

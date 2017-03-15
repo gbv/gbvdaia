@@ -1,5 +1,4 @@
-<?php
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace DAIA;
 
@@ -11,15 +10,21 @@ namespace DAIA;
  */
 abstract class ServiceStatus extends Data
 {
-    public $service;
-    public $href;
-    public $limitation;
+    protected $service;
+    protected $href;
+    protected $limitation;
 
-    public function __construct(array $data)
-    {
-        parent::__construct($data);        
-        if (preg_match('/(presentation|loan|remote|interloan|openaccess)$/', $this->service)) {
-            $this->service = 'http://purl.org/ontology/dso#'.ucfirst($this->service);
+    protected function setService($value) {
+        if (preg_match('/(presentation|loan|remote|interloan|openaccess)$/', $value)) {
+            $this->service = 'http://purl.org/ontology/dso#'.ucfirst($value);
         }
+    }
+
+    protected function fieldRequired($field): bool {
+        return $field == 'service';
+    }
+
+    protected function fieldRepeatable($field): bool {
+        return $field == 'limitation';
     }
 }

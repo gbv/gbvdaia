@@ -33,10 +33,6 @@ class FileConfig implements Config
     {
         $this->logger->warn("readConfig not implemented yet!");
         // TODO: read and enable logging configuration
-        // move to logging class?
-        // log standard to default log
-        // send critical errors to critical file
-        // log everything to detailled log
     }
 
     protected static function readFile($file): string

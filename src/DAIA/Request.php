@@ -9,7 +9,7 @@ namespace DAIA;
  * See <https://purl.org/NET/DAIA#request-and-response>
  * @package DAIA
  */
-class Request
+class Request extends Data
 {
     public $method = 'GET'; // GET, HEAD, OPTIONS
     public $ids;
@@ -21,6 +21,7 @@ class Request
     public $accept;
     public $language;
     public $authorization;
+    public $origin;
 
     /**
      * Create a new HTTP GET Request.

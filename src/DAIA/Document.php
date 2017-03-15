@@ -1,5 +1,4 @@
-<?php
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace DAIA;
 
@@ -11,15 +10,17 @@ namespace DAIA;
  */
 class Document extends Data
 {
-    public $id;
-    public $requested;
-    public $href;
-    public $about;
-    public $item;
+    protected $id;
+    protected $requested;
+    protected $href;
+    protected $about;
+    protected $item;
 
-    public function __construct(string $id, string $requested = null)
-    {
-        $this->id = $id;
-        $this->requested = $requested;
+    protected function fieldRequired($field): bool {
+        return $field == 'id';
+    }
+
+    protected function fieldRepeatable($field): bool {
+        return $field == 'item';
     }
 }

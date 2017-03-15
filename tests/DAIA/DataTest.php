@@ -1,47 +1,86 @@
-<?php
+<?php declare(strict_types=1);
+
 namespace DAIA;
 
-use PHPUnit\Framework\TestCase;
-
-class DAIADataTest extends TestCase
+class DataTest extends \PHPUnit\Framework\TestCase
 {
-    public function testEmptyConstructor()
+    public function testEntity()
     {
-        foreach (['Entity', 'Item', 'Chronology'] as $class) {
+        foreach (['Institution', 'Department', 'Storage', 'Limitation'] as $class) {
             $class = "DAIA\\$class";
+
+            // empty constructor
             $object = new $class();
             $this->assertSame("$object", '{}');
+
+            // stringify as JSON
+            $e = new $class(['id'=>'x:y']);
+            $this->assertSame("$e", '{"id":"x:y"}');
+
+            // pretty printed JSON
+            $this->assertSame($e->json(), "{\n    \"id\": \"x:y\"\n}");
+
+            $data = [
+                'id' => 'x:y', 
+                'content' => 'foo',
+                'href' => 'http://example.org',
+                'ignore' => 123
+            ];
+            $e = new $class($data);
+            $this->assertSame("$e", '{"content":"foo","href":"http://example.org","id":"x:y"}');        
         }
     }
 
-    public function testEntity()
-    {
-        // stringify as JSON
-        $e = new Entity(['id'=>'x:y']);
-        $this->assertSame("$e", '{"id":"x:y"}');
-
-        // pretty printed JSON
-        $this->assertSame($e->json(), "{\n    \"id\": \"x:y\"\n}");
+    /**
+     * @expectedException LogicException
+     * @expectedExceptionMessage DAIA\Storage->foo does not exist
+     */
+    public function testGetterException() {
+        $entity = new Storage();
+        $entity->foo;
     }
 
-    public function testDocument()
-    {
-        $d = new Document("i:d");
-        $this->assertSame("$d", '{"id":"i:d"}');
-
-        $d->item = [];
-        $this->assertSame("$d", '{"id":"i:d","item":[]}');
+    /**
+     * @expectedException LogicException
+     * @expectedExceptionMessage DAIA\Limitation->foo does not exist
+     */
+    public function testSetterException() {
+        $entity = new Limitation();
+        $entity->foo = 'bar';
     }
 
-    public function testItem()
-    {
-        $item = new Item();
-        $this->assertSame("$item",'{}');
+    /**
+     * @expectedException LogicException
+     * @expectedExceptionMessage DAIA\Document->id is required
+     */
+    public function testRequiredException() {
+        $document = new Document([]);
     }
-   
-    public function testChronology()
-    {
-        $c = new Chronology("2012");
-        $this->assertSame("$c", '{"about":"2012"}');
+
+    /**
+     * @expectedException InvalidArgumentException
+     * @expectedExceptionMessage DAIA\Document->id is required
+     */
+    public function testNotNullException() {
+        $document = new Document(['id'=>'i:d']);
+        $document->id = NULL;
+    }
+
+    /**
+     * @expectedException LogicException
+     * @expectedExceptionMessage Call to undefined method DAIA\Document->addFoo
+     */
+    public function testCallUndefined() {
+        $document = new Document(['id'=>'i:d']);
+        $document->addFoo(123);
+    }
+
+    /**
+     * @expectedException LogicException
+     * @expectedExceptionMessage DAIA\Document->id is not repeatable
+     */
+    public function testAddNonRepeatable() {
+        $document = new Document(['id'=>'i:d']);
+        $document->addId('x:y');
     }
 }

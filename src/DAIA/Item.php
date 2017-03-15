@@ -1,5 +1,4 @@
-<?php
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace DAIA;
 
@@ -11,13 +10,17 @@ namespace DAIA;
  */
 class Item extends Data
 {
-    public $id;
-    public $href;
-    public $part;
-    public $label;
-    public $chronology;
-    public $department;
-    public $storage;
-    public $available;
-    public $unavailable;
+    protected $id;
+    protected $href;
+    protected $part;
+    protected $label;
+    protected $chronology;
+    protected $department;
+    protected $storage;
+    protected $available;
+    protected $unavailable;
+
+    protected function fieldRepeatable($field): bool {
+        return $field == 'available' or $field == 'unavailable';
+    }
 }

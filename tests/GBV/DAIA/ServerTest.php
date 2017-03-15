@@ -42,16 +42,16 @@ class ServerTest extends TestCase {
             'id' => 'http://uri.gbv.de/document/opac-de-12345:epn:98765',
             'label' => 'foo/bar',
 			'unavailable' => [
-				new Unavailable([ 'service' => 'loan' ]),
+				[ 'service' => 'loan' ],
 			],
 			'available' => [	
-				new Available([ 'service' => 'presentation' ]),
-				new Available([
+				[ 'service' => 'presentation' ],
+				[
 					'service' => 'interloan',
 					'limitation' => [
-						new Entity(['content' => 'nur Kopie'])
+						['content' => 'nur Kopie']
 					]
-				]),
+				],
 			]
         ]);
         $this->assertEquals($item, $expect);

@@ -1,5 +1,4 @@
-<?php
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace DAIA;
 
@@ -11,6 +10,16 @@ namespace DAIA;
  */
 class Unavailable extends ServiceStatus
 {
-    public $expected;
-    public $queue;
+    protected $expected;
+    protected $queue;
+    
+    protected function setExpected($value) {
+        if ($value == 'unknown' or Data::isDatetime($value)) {
+            $this->expected = $value;
+        }
+    }
+
+    protected function setQueue($value) {
+        $this->queue = $value >= 0 ? (int)$value : 0;
+    }
 }

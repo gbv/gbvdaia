@@ -35,7 +35,9 @@ class ServerFactory
         }
         
         $server = new Server($this->config, $this->logger);
-        $server->isil = $isil ?? null;
+        if (isset($isil)) {
+            $server->isil = $isil;
+        }
 
         return $server;
     }

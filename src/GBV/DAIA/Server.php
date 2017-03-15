@@ -3,11 +3,11 @@
 namespace GBV\DAIA;
 
 use DAIA\Request;
-use DAIA\Response;
+use DAIA\DAIAResponse;
 use DAIA\Error;
 use DAIA\Document;
 use DAIA\Item;
-use DAIA\Entity;
+use DAIA\Limitation;
 use DAIA\ServiceStatus;
 use DAIA\Available;
 use DAIA\Unavailable;
@@ -59,12 +59,12 @@ class Server extends \DAIA\Server
     /**
      * @throws \DAIA\Error
      */
-    public function queryHandler(Request $request): \DAIA\Response
+    public function queryHandler(Request $request): DAIAResponse
     {
         // DAIA Request object: INFO
         # $this->logger->info('request', ['request'=>$request, 'isil' => $isil]);
 
-        $response = new Response();
+        $response = new DAIAResponse();
 
         if ($this->isil) {
             $uri = "http://uri.gbv.de/organization/isil/".$this->isil;
@@ -91,7 +91,11 @@ class Server extends \DAIA\Server
             }
         }
         if ($doc) {
-            $response->document[] = $doc;
+            $this->logger->debug('{document}',['document'=>$doc]);
+
+            $response->addDocument($doc);
+
+            $this->logger->debug('{document}',['document'=>$doc]);
         }
         
         $response->language = 'de';
@@ -128,7 +132,7 @@ class Server extends \DAIA\Server
         $pica = (string) $response->getBody();
 
         // document found
-        $doc = new Document($id->uri(), $id->requested);
+        $doc = new Document(['id'=>$id->uri(), 'requested'=>$id->requested]);
         # TODO: add href based on opac URL
         # TODO: add department
         
@@ -139,7 +143,7 @@ class Server extends \DAIA\Server
         foreach ($pica->holdings as $iln => $holdings) {
             foreach ($holdings as $holding) {
                 if ($holding->epn) {
-                    $doc->item[] = $this->convertHolding($id, $holding);
+                    $doc->addItem($this->convertHolding($id, $holding));
                 } else {
 					$this->logger->warn('holding without epn', (array)$holding);
 				}
@@ -195,9 +199,9 @@ class Server extends \DAIA\Server
             }
             $service = $this->holdingService($holding, $name, $config);
             if ($service instanceof Available) {
-                $item->available[] = $service;
+                $item->addAvailable($service);
             } elseif ($service instanceof Unavailable) {
-                $item->unavailable[] = $service;
+                $item->addUnavailable($service);
             }
         }
         
@@ -214,7 +218,7 @@ class Server extends \DAIA\Server
 		// limitation
         $limitation = $config['limitation'] ?? null;
 		if ($limitation) {
-			$has['limitation'] = [new Entity(['content'=>$limitation])];
+			$has['limitation'] = [new Limitation(['content'=>$limitation])];
 		}
 
         // expected

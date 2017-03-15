@@ -1,5 +1,4 @@
-<?php
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace DAIA;
 
@@ -9,7 +8,7 @@ namespace DAIA;
  * See <https://purl.org/NET/DAIA#request-and-response>
  * @package DAIA
  */
-class OptionsResponse extends ResponseData    
+class OptionsResponse extends Response
 {
     public function __construct()
     {

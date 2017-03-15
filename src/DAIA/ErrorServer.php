@@ -1,5 +1,4 @@
-<?php
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace DAIA;
 
@@ -17,7 +16,7 @@ class ErrorServer extends Server
         $this->error = $error;
     }
     
-    public function queryHandler(Request $request): Response
+    public function queryHandler(Request $request): DAIAResponse
     {
         throw $this->error;
     }

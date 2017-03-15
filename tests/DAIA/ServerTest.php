@@ -9,11 +9,11 @@ class ServerTest extends \PHPUnit\Framework\TestCase
     {        
         $this->server = new class extends Server {
             public $error;
-			public function queryHandler(Request $request): Response {
+			public function queryHandler(Request $request): DAIAResponse {
                 if (count($request->ids)>1) {
                     1 % 0;
                 }
-				return new Response();
+				return new DAIAResponse();
 			}
             public function exceptionHandler(Request $request, \Throwable $exception) {
                 $this->error = [

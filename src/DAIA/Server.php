@@ -1,5 +1,4 @@
-<?php
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace DAIA;
 
@@ -7,17 +6,17 @@ namespace DAIA;
  * DAIA Server boilerplate.
  * 
  * A Server derived from this class must implement method `queryHandler`.
- * This method should return a DAIA Response or throw a DAIA Error. A Server
+ * This method should return a DAIAResponse or throw a DAIA Error. A Server
  * can be queried via method `query`.
  *
  * ~~~php
  * use DAIA\Request;
- * use DAIA\Response;
+ * use DAIA\DAIAResponse
  *
  * class MyDAIAServer extends \DAIA\Server {
- *    public function queryHandler(Request $request): Response {
+ *    public function queryHandler(Request $request): DAIAResponse {
  *        if (...) throw new \DAIA\Error(...);
- *        return new Response(...);
+ *        return new DAIAResponse(...);
  *    }
  * }
  *
@@ -29,14 +28,14 @@ namespace DAIA;
  */
 abstract class Server
 {
-    public abstract function queryHandler(Request $request): Response;
+    public abstract function queryHandler(Request $request): DAIAResponse;
 
     protected function exceptionHandler(Request $request, \Throwable $exception)
     {
        // return true to rethrow exception 
     }
 
-    public function query(Request $request): ResponseData
+    public function query(Request $request): Response
     {
         if ($request->method == 'OPTIONS') {
             return new OptionsResponse(); 

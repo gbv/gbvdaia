@@ -1,5 +1,4 @@
-<?php
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace DAIA;
 
@@ -9,7 +8,7 @@ namespace DAIA;
  * See <https://purl.org/NET/DAIA#error-responses>
  * @package DAIA
  */
-class ErrorResponse extends ResponseData
+class ErrorResponse extends Response
 {
     public $code;
     public $error;
