@@ -31,8 +31,6 @@ class Request extends Data
      */
     public function __construct($query='', array $headers=[])
     {
-        // TODO: make this private            
-
         // request parameters
         if (!is_array($query)) {
             $query = ['id'=>(string)$query];
@@ -63,6 +61,7 @@ class Request extends Data
     public static function fromGlobals(array $server=null, array $get=null): Request
     {
         $server = $server ?? $_SERVER;
+        $get = $get ?? $_GET;
         
         if (function_exists('getallheaders')) {
             $headers = getallheaders();
@@ -77,8 +76,9 @@ class Request extends Data
             }
         }
 
-        $method = $server['REQUEST_METHOD'] ?? 'GET';
-        return static::buildRequest($method, $get ?? $_GET, $headers);
+        $request = new Request($get, $headers);
+        $request->method = $server['REQUEST_METHOD'] ?? 'GET';
+        return $request;
     }
 
     /**
@@ -86,30 +86,25 @@ class Request extends Data
      *
      * @throws TypeError unless the argument is instance of Psr\Http\Message\ServerRequestInterface
      */
-    public static function fromPsr7($request): Request
+    public static function fromPsr7($req): Request
     {
         // This class does not require PSR-7 so we cannot use type hinting
         $expect = "Psr\Http\Message\ServerRequestInterface";
         $method = __METHOD__;
-        if (!$request instanceof $expect) {
-            $type = gettype($request);
+        if (!$req instanceof $expect) {
+            $type = gettype($req);
             if ($type == 'object') {
-                $type = "instance of ".get_class($request);
+                $type = "instance of ".get_class($req);
             }
             throw new \TypeError("Argument 1 passed to $method must be an instance of $expect, $type given");
         }
 
         $headers = array_map(function ($h) {
             return $h[0];
-        }, $request->getHeaders());
+        }, $req->getHeaders());
 
-        return static::buildRequest($request->getMethod(), $request->getQueryParams(), $headers);
-    }
-
-    private static function buildRequest($method, $query, $headers): Request
-    {
-        $request = new Request($query, $headers);
-        $request->method = $method;
+        $request = new Request($req->getQueryParams(), $headers);
+        $request->method = $req->getMethod();
         return $request;
     }
 }

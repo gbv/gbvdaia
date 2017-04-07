@@ -83,4 +83,12 @@ class DataTest extends \PHPUnit\Framework\TestCase
         $document = new Document(['id'=>'i:d']);
         $document->addId('x:y');
     }
+
+    /**
+     * @expectedException LogicException
+     * @expectedExceptionMessage DAIA\Storage->content must be string
+     */
+    public function testStringRequired() {
+        $document = new Storage(['content'=>[]]);
+    }
 }

@@ -16,7 +16,7 @@ class ErrorServer extends Server
         $this->error = $error;
     }
     
-    public function queryHandler(Request $request): DAIAResponse
+    public function queryHandler(Request $request): Response
     {
         throw $this->error;
     }

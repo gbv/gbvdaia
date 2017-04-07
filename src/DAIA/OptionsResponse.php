@@ -8,7 +8,7 @@ namespace DAIA;
  * See <https://purl.org/NET/DAIA#request-and-response>
  * @package DAIA
  */
-class OptionsResponse extends Response
+class OptionsResponse extends HTTPResponse
 {
     public function __construct()
     {

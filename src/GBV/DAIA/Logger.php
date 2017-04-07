@@ -7,6 +7,7 @@ use Monolog\Formatter\LineFormatter;
 use Monolog\Handler\StreamHandler;
 use Monolog\Handler\FingersCrossedHandler;
 use Monolog\Processor\PsrLogMessageProcessor;
+use Monolog\Processor\IntrospectionProcessor;
 
 /**
  * @package GBVDAIA 
@@ -33,7 +34,8 @@ class Logger extends \Monolog\Logger {
                 $this->dir = $dir;
                 $this->popHandler();
 
-                $handler = $this->logfile('error.log', LogLevel::ERROR);
+                $format = "%datetime% %level% %message% %context% %extra%\n";
+                $handler = $this->logfile('error.log', LogLevel::ERROR, $format);
                 $this->pushHandler($handler);
 
                 $handler = $this->logfile('default.log', $level);
@@ -46,6 +48,7 @@ class Logger extends \Monolog\Logger {
 
                 // TODO: add line number and stack trace
                 $handler = $this->logfile('crash.log', LogLevel::DEBUG);
+                $handler->pushProcessor(new IntrospectionProcessor());
                 $handler = new FingersCrossedHandler($handler, \Monolog\Logger::CRITICAL);
                 $this->pushHandler($handler);
             } else {
@@ -75,7 +78,7 @@ class Logger extends \Monolog\Logger {
         }
         $handler = new StreamHandler($stream, $level);
 
-        $output = "[%datetime%] %level_name% %message%\n";
+        $output = "%datetime% %level_name% %message%\n";
         $formatter = new LineFormatter($format ?? $output);
         $handler->setFormatter($formatter);
 

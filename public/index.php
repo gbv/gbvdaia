@@ -29,6 +29,7 @@ $logger = new GBV\DAIA\Logger($LOG_DIR, $LOG_LEVEL);
 $path   = $_SERVER['PATH_INFO'] ?? '/';
 
 $request = DAIA\Request::fromGlobals();
+
 $logger->access($_SERVER['REMOTE_ADDR'], $path, $request);
 
 if ( $request->method != 'OPTIONS' and $path == '/' and !count($request->ids) ) {
@@ -52,4 +53,4 @@ $response = $server->query($request);
 # TODO: für ausgewählte Bibliotheken: XML-Format erlauben (veraltet)
 
 $logger->debug('{response}', ['response'=>$response]);
-$response->send();
+$response->send($request);

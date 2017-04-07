@@ -8,7 +8,7 @@ namespace DAIA;
  * See <https://purl.org/NET/DAIA#error-responses>
  * @package DAIA
  */
-class ErrorResponse extends Response
+class ErrorResponse extends HTTPResponse
 {
     public $code;
     public $error;

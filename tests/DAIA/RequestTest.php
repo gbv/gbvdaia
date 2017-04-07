@@ -6,19 +6,24 @@ use DAIA\Request;
 
 class RequestTest extends TestCase
 {
+    public function request(array $query=[])
+    {
+        return Request::fromGlobals(['HTTP_REQUEST_METHOD'=>'GET'], $query);
+    }
+
     public function testIds()
     {
-        $r = new Request();
+        $r = $this->request([]);
         $this->assertSame($r->ids, []);
         $this->assertSame($r->method, 'GET');
         
-        $r = new Request(['id'=>'']);
+        $r = $this->request(['id'=>'']);
         $this->assertSame($r->ids, []);
 
-        $r = new Request('0');
+        $r = $this->request(['id'=>'0']);
         $this->assertSame($r->ids, ['0']);
 
-        $r = new Request(['id'=>'foo||0']);
+        $r = $this->request(['id'=>'foo||0']);
         $this->assertSame($r->ids, ['foo','0']);
     }
 
@@ -28,14 +33,23 @@ class RequestTest extends TestCase
 
             $req = $serverRequest->withQueryParams(['id'=>'0']);
 
-            $expect = new Request('0');
+            $expect = $this->request(['id'=>'0']);
             $this->assertEquals(Request::fromPsr7($req), $expect);
 
             $req = new \GuzzleHttp\Psr7\ServerRequest('OPTIONS','http://example.org/');
-            $expect = new Request();
+            $expect = $this->request();
             $expect->method = 'OPTIONS';
             $this->assertEquals(Request::fromPsr7($req), $expect);
         }
+    }
+
+    public function testFormat()
+    {
+        $r = $this->request([]);
+        $this->assertSame($r->format, 'json');
+
+        $r = $this->request(['format'=>'xml']);
+        $this->assertSame($r->format, 'xml');
     }
 
     /**

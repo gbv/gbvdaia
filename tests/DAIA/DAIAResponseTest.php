@@ -1,17 +1,19 @@
 <?php
 namespace DAIA;
 
-class DAIAResponseTest extends \PHPUnit\Framework\TestCase
+use DOMDocument;
+
+class ResponseTest extends \PHPUnit\Framework\TestCase
 {
-    public function testDAIAResponse()
+    public function testResponse()
     {
-        $res = new DAIAResponse();
+        $res = new Response();
 
         $body = '{"document":\[\],"timestamp":".+"}';
         $this->assertRegExp("/^$body$/", "$res");
         $this->assertSame(200, $res->getStatusCode());
         $this->assertRegExp("/^\/\*\*\/foo\($body\);$/", $res->getBody('foo'));
-        
+
         $this->assertSame($res->getHeaders(), [
 			'Access-Control-Allow-Origin' => ['*'],
 			'Content-Language' => ['en'],
@@ -20,6 +22,9 @@ class DAIAResponseTest extends \PHPUnit\Framework\TestCase
         ]);
 
         $this->assertSame($res->getHeaders('foo')['Content-Type'], ['application/javascript']);
+
+        $xml = $res->getBody('', 'xml');
+        $this->assertRegExp("/^<\?xml[^>]+>\\n<response/m", $xml);
     }
 
     public function testResponseData() {
@@ -28,8 +33,8 @@ class DAIAResponseTest extends \PHPUnit\Framework\TestCase
             'institution' => [ 'content' => 'library' ],
             'department' => 'ignored'
         ];
-        $res = new DAIAResponse($data);
-        $expect = new DAIAResponse();
+        $res = new Response($data);
+        $expect = new Response();
         $expect->document = [ new Document(['id'=>'i:d']) ];
         $expect->institution = new Institution(['content'=>'library']);
         $this->assertEquals($res, $expect);

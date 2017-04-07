@@ -3,7 +3,7 @@
 namespace GBV\DAIA;
 
 use DAIA\Request;
-use DAIA\DAIAResponse;
+use DAIA\Response;
 use DAIA\Error;
 use DAIA\Document;
 use DAIA\Item;
@@ -59,18 +59,32 @@ class Server extends \DAIA\Server
     /**
      * @throws \DAIA\Error
      */
-    public function queryHandler(Request $request): DAIAResponse
+    public function queryHandler(Request $request): Response
     {
         // DAIA Request object: INFO
         # $this->logger->info('request', ['request'=>$request, 'isil' => $isil]);
 
-        $response = new DAIAResponse();
+        $response = new Response();
 
         if ($this->isil) {
             $uri = "http://uri.gbv.de/organization/isil/".$this->isil;
-            # TODO: check whether Org exists and get Organization name
-            #$xml = $this->client->get('http://unapi.gbv.de/', [
-            $response->organization = new Entity(['uri'=>$uri]);
+
+            # TODO: handle request error
+            # TODO: use lobid.org instead
+            $data = $this->getJSON("$uri?format=json");
+            if ($data) {
+                $this->logger->notice('ORG: {data}',['data'=>json_encode($data[$uri])]);
+                try {
+                    $homepage = $data[$uri]["http://xmlns.com/foaf/0.1/homepage"][0]['value'];
+                    // TODO: use long name instead (shortname & long name)
+                    $name =  $data[$uri]["http://xmlns.com/foaf/0.1/name"][0]['value'];
+                } catch (\Exception $e) {}
+                $response->institution = new \DAIA\Institution([
+                    'id' => $uri
+                ]);
+                if (isset($homepage)) $response->institution->href = $homepage;
+                if (isset($name)) $response->institution->content = $name;
+            }
         }
     
         if (!count($request->ids)) {
@@ -110,6 +124,16 @@ class Server extends \DAIA\Server
             'server' => $this,
             'exception' => $exception,
         ]);
+        return true;
+    }
+
+    protected function getJSON($url) {
+        $response = $this->client->get($url);
+        if ($response->getStatusCode() == 200) {
+            return json_decode((string)$response->getBody(), True);
+        } else {
+            return [];
+        }
     }
 
     public function queryDocument(DocumentID $id)

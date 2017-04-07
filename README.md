@@ -10,6 +10,8 @@ PICA-Kataloge (LBS-Bibliotheken).  Der genaue Funktionsumfang mit Unterschieden
 zum PAIA/DAIA-Service und zum alten DAIA-Server ist auf der Startseite
 beschrieben.
 
+[PAIA/DAIA-Service]: https://www.gbv.de/Verbundzentrale/serviceangebote/paia-service
+
 
 ## Demo
 
@@ -38,10 +40,14 @@ Zum Testen kann der DAIA-Server auch auf der Kommandozeile gestartet werden:
 
     $ php -S localhost:8080 public/index.php
 
+[DOM Extension]: https://secure.php.net/manual/en/book.dom.php
+[Multibyte Extension]: https://secure.php.net/manual/en/book.mbstring.php
+[composer]: https://getcomposer.org/
+
+
 ### Apache unter Ubuntu
 
-Prinzipiell können verschiedene Webserver verwendet werden. Hier die Schritte
-zur Installation unter Apache2 unter Ubuntu:
+Hier die Schritte zur Installation unter Apache2 unter Ubuntu:
 
     $ sudo apt-get install libapache2-mod-php7.0
 
@@ -79,6 +85,8 @@ Statt den DAIA-Server per HTTP abzufragen kann der Dienst auch lokal
 installiert und direkt in PHP aufgerufen werden:
 
 ~~~php
+require 'vendor/autoload.php';
+
 $config   = new GBV\DAIA\FileConfig($config_directory);
 $server   = new GBV\DAIA\Server($config, $logger);
 $request  = new DAIA\Request([ 'id' => $id ]);
@@ -100,9 +108,4 @@ bereitgestellt werden (Interface `GBV\DAIA\Config`).
 
 gbvdaia kann unter den Bedingungen der [AGPL] weiterverwendet werden.
 
-
-[PAIA/DAIA-Service]: https://www.gbv.de/Verbundzentrale/serviceangebote/paia-service
-[DOM Extension]: https://secure.php.net/manual/en/book.dom.php
-[Multibyte Extension]: https://secure.php.net/manual/en/book.mbstring.php
-[composer]: https://getcomposer.org/
 [AGPL]: https://de.wikipedia.org/wiki/GNU_Affero_General_Public_License

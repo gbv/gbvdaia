@@ -27,7 +27,7 @@ class Data implements \JsonSerializable
             }
         }
         foreach ($this as $field => $value) {
-            if ($value === NULL and $this->fieldRequired($field)) {
+            if ($value === null and $this->fieldRequired($field)) {
                 throw new \LogicException(get_class($this)."->$field is required");
             }
         }
@@ -47,6 +47,13 @@ class Data implements \JsonSerializable
     }
 
     /**
+     * Check whether a field exists and has been set.
+     */
+    public function __isset($field) {
+        return property_exists($this, $field) and $this->$field !== null;
+    }
+
+    /**
      * Set a field.
      *
      * @throws LogicException if the field does not exist
@@ -57,11 +64,11 @@ class Data implements \JsonSerializable
             throw new \LogicException(get_class($this)."->$field does not exist");
         }
 
-        if ($value === NULL) {
+        if ($value === null) {
             if ($this->fieldRequired($field)) {
                 throw new \InvalidArgumentException(get_class($this)."->$field is required");
             } else {
-               $this->$field = NULL;
+               $this->$field = null;
                return;
             }
         }
@@ -184,4 +191,5 @@ class Data implements \JsonSerializable
     {
         return json_encode($this, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
     }
+
 }
