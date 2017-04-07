@@ -9,4 +9,6 @@ interface Config
 
     // Expected to return array of service to 'is', 'limitation'.
     public function loanIndicator(string $dbkey, string $indikator): array;
+
+    public function proxyUrl(string $isil): string;
 }

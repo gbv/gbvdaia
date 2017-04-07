@@ -69,9 +69,7 @@ abstract class HTTPResponse extends Data
     public function getBody(string $callback='', string $format='json'): string
     {
         if ($format == 'xml') {
-            $writer = new XMLWriter();
-            $writer->write($this);
-            return $writer->outputMemory();
+            return $this->xml();
         } else {
             if ($callback) {
                 return "/**/$callback($this);";

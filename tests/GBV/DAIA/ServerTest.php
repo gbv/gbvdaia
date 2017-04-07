@@ -18,14 +18,16 @@ class ServerTest extends TestCase {
     public function testConstructor() {
         $logger = new Logger();
         $config = new FileConfig('-', $logger);
-        $service = new Server($config, $logger);
+        $client = ServerFactory::makeClient($logger);
+        $service = new Server($config, $logger, $client);
         $this->assertTrue(!!$service);
     }
 
     public function testConvertHolding() {
         $logger = new Logger();
         $config = new FileConfig(EXAMPLES, $logger);
-        $service = new Server($config, $logger);
+        $client = ServerFactory::makeClient($logger);
+        $service = new Server($config, $logger, $client);
 
         $holding = new Holding();
     	$holding->epn = '98765';

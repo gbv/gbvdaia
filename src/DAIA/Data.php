@@ -192,4 +192,12 @@ class Data implements \JsonSerializable
         return json_encode($this, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
     }
 
+    /**
+     * Serialize to XML.
+     */
+    public function xml()
+    {
+        $writer = new XMLWriter();
+        return $writer->write($this)->outputMemory();
+    }
 }

@@ -96,4 +96,12 @@ class FileConfig implements Config
     public static $defaultLoanIndicator = [
 
     ];
+
+    public function proxyUrl(string $isil): string {
+        if ($isil == 'Hil2') {
+            return 'http://lhhil.gbv.de:7242/DE-Hil2/daia';
+        }
+
+        return '';
+    }
 }

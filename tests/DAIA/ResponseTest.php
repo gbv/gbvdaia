@@ -24,7 +24,7 @@ class ResponseTest extends \PHPUnit\Framework\TestCase
         $this->assertSame($res->getHeaders('foo')['Content-Type'], ['application/javascript']);
 
         $xml = $res->getBody('', 'xml');
-        $this->assertRegExp("/^<\?xml[^>]+>\\n<response/m", $xml);
+        $this->assertRegExp("/^<\?xml[^>]+>\\n<daia/m", $xml);
     }
 
     public function testResponseData() {

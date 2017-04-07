@@ -58,7 +58,7 @@ abstract class Server
             if ($rethrow) {
                 throw $e;
             } else {
-                return new ErrorResponse(500, 'Unexpected internal server error');
+                return new ErrorResponse(500, "$e");
             }
         }
     }

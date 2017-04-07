@@ -29,24 +29,33 @@ class XMLWriter extends \XMLWriter
         $name = strtolower(substr(strrchr(get_class($data), '\\'), 1));
         $attr = [];
         $children = [];
+        $text = 'label';
         
         if ($name == 'response') {
+            $name = 'daia';
             $attr['xmlns'] = "http://ws.gbv.de/daia/";
             $attr['timestamp'] = $data->timestamp;
             $attr['version'] = '0.5';
-            $children = array_merge([$data->institution], $data->document);
+            $children = array_merge([$data->institution], $data->document ?? []);
         } else if ($name == 'document') {
-            $children = $data->item;
+            $children = $data->item ?? [];
         } else if ($name == 'item') {
             $children = array_merge(
                 [$data->department, $data->storage, $data->label],
-                $data->available,
-                $data->unavailable
+                $data->available ?? [],
+                $data->unavailable ?? []
             );
         } else if ($name == 'available') {
-            $children = $data->limitation;
+            $children = $data->limitation ?? [];
         } else if ($name == 'unavailable') {
-            $children = $data->limitation;
+            $children = $data->limitation ?? [];
+        } else if ($name == 'errorresponse') {
+            $name = 'daia';
+            $response = new Response();
+            $attr['xmlns'] = "http://ws.gbv.de/daia/";
+            $attr['version'] = '0.5';
+            $children = ["$data"];
+            $text = "message";
         }
 
         $this->startElement($name);
@@ -62,8 +71,8 @@ class XMLWriter extends \XMLWriter
         foreach ($children as $child) {
             if (is_object($child)) {
                 $this->write($child);
-            } else if (isset($child)) { // label
-                $this->startElement('label');
+            } else if (isset($child)) {
+                $this->startElement($text);
                 $this->text($child);
                 $this->endElement();
             }

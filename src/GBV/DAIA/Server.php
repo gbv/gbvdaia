@@ -16,10 +16,13 @@ use GBV\DocumentID;
 use GBV\DAIA\Record;
 
 use Psr\Log\LoggerInterface;
-use GuzzleHttp\Client;
+
+use Http\Client\HttpClient;
 use GuzzleHttp\Exception\RequestException;
 
-use Monolog\Logger;
+use Http\Client\Common\HttpMethodsClient;
+use Http\Discovery\HttpClientDiscovery;
+use Http\Discovery\MessageFactoryDiscovery;
 
 /** @package GBVDAIA */
 class Server extends \DAIA\Server
@@ -27,33 +30,19 @@ class Server extends \DAIA\Server
     use \Psr\Log\LoggerAwareTrait;
 
     protected $config;
-    protected $client;
+    public $client;
 
     public $isil;
 
-    public function __construct(Config $config, LoggerInterface $logger=null)
+    public function __construct(Config $config, LoggerInterface $logger, HttpClient $client)
     {
+        // TODO: require Logger?
         $this->setLogger($logger ?? new Logger());
         $this->config = $config;
-
-        // configure HTTP request logging
-        $stack = \GuzzleHttp\HandlerStack::create();
-        $stack->unshift(\GuzzleHttp\Middleware::log($logger,
-            new \GuzzleHttp\MessageFormatter("{method} {uri} {code}"),
-            Logger::INFO    // internal HTTP request: INFO
-        ));
-        $stack->unshift(\GuzzleHttp\Middleware::log($logger,
-            new \GuzzleHttp\MessageFormatter("{res_headers}\n{res_body}"),
-            Logger::DEBUG   // internal HTTP response: DEBUG
-        ));
-
-        // setup HTTP client
-        $this->client = new Client([
-            'connect_timeout' => 1.0,
-            'timeout' => 3.0,
-            'User-Agent' => 'GBVDAIA/0.0.0',
-            'handler' => $stack,
-        ]);
+        $this->client = new HttpMethodsClient(
+            $client ?? HttpClientDiscovery::find(),
+            MessageFactoryDiscovery::find()
+        );
     }
 
     /**
@@ -78,7 +67,8 @@ class Server extends \DAIA\Server
                     $homepage = $data[$uri]["http://xmlns.com/foaf/0.1/homepage"][0]['value'];
                     // TODO: use long name instead (shortname & long name)
                     $name =  $data[$uri]["http://xmlns.com/foaf/0.1/name"][0]['value'];
-                } catch (\Exception $e) {}
+                } catch (\Exception $e) {
+                }
                 $response->institution = new \DAIA\Institution([
                     'id' => $uri
                 ]);
@@ -97,19 +87,16 @@ class Server extends \DAIA\Server
         $id = DocumentID::parse($request->ids[0], $this->isil);
         if ($id) {
             try {
-                $doc = $this->queryDocument($id);
-            # TODO: catch 404
+                $doc = $this->queryDocument($id);                
+                if ($doc) {
+                    $this->logger->debug('{document}',['document'=>$doc]);
+                    $response->addDocument($doc);
+                    $this->logger->debug('{document}',['document'=>$doc]);
+                }
             } catch (RequestException $e) {
                 $this->logger->error("502");
                 throw new Error(502, 'internal request failed');
             }
-        }
-        if ($doc) {
-            $this->logger->debug('{document}',['document'=>$doc]);
-
-            $response->addDocument($doc);
-
-            $this->logger->debug('{document}',['document'=>$doc]);
         }
         
         $response->language = 'de';
@@ -124,36 +111,28 @@ class Server extends \DAIA\Server
             'server' => $this,
             'exception' => $exception,
         ]);
-        return true;
+    }
+
+    protected function getHTTP($url): string {
+
+        $response = $this->client->get($url);
+
+        if ($response->getStatusCode() == 200) {
+            return (string)$response->getBody();
+        } else {
+            return '';
+        }
     }
 
     protected function getJSON($url) {
-        $response = $this->client->get($url);
-        if ($response->getStatusCode() == 200) {
-            return json_decode((string)$response->getBody(), True);
-        } else {
-            return [];
-        }
+        $json = $this->getHTTP($url);
+        return $json ? json_decode($json, true) : [];
     }
 
     public function queryDocument(DocumentID $id)
     {
-        // fetch PICA record
-        $response = $this->client->get('http://unapi.gbv.de/', [
-            'query'=> ['id' => $id->short(), 'format' => 'pp'],
-            'http_errors' => false,
-        ]);
-        # TODO: catch 404, this is fine if not found!
-        # TODO: don't throw HTTP errors but check back
-
-        if ($response->getStatusCode() == 404) {
-            return;
-        } elseif ($response->getStatusCode() != 200) {
-            # TODO: throw error (502)
-            return;
-        }
-        
-        $pica = (string) $response->getBody();
+        // fetch PICA record . TODO: encoding?
+        $pica = $this->getHTTP("http://unapi.gbv.de/?format=pp&id=" . $id->short());
 
         // document found
         $doc = new Document(['id'=>$id->uri(), 'requested'=>$id->requested]);
